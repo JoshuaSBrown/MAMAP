@@ -43,6 +43,10 @@ enum class Option {
   DEFAULT
 };
 
+std::ostream& operator<<(std::ostream& out, const Option option);
+
+std::string operator+(std::string str, const Option option);
+
 class PropertyObject {
  protected:
   // Map key is the option name and the type "int, double etc"
@@ -64,7 +68,8 @@ class PropertyObject {
   }
 
   void setPropOption_(const Option &option, const std::any &val) {
-      options_[option] = val;
+      std::any as_default = convert_to_default_(option, val);
+      options_[option] = as_default;
   }
 
   bool conversionAllowed_(Option option, std::type_index type) const {
@@ -74,6 +79,7 @@ class PropertyObject {
     return false;
   } 
 
+  // Convert from the default to the type
   typedef int (*int_func)(Option,std::map<Option, std::any>); 
   std::map<Option,int_func> int_convert_;
   typedef double (*double_func)(Option,std::map<Option, std::any>); 
@@ -93,44 +99,124 @@ class PropertyObject {
   typedef std::vector<std::string> (*vector_str_func)(Option,std::map<Option, std::any>); 
   std::map<Option,vector_str_func> vector_str_convert_;
 
+  // Convert from the supported types to the default to store it
+  typedef std::any (*int_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  std::map<Option,int_func_to_default> int_convert_to_default_;
+  typedef std::any (*double_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  std::map<Option,double_func_to_default> double_convert_to_default_;
+  typedef std::any (*str_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  std::map<Option,str_func_to_default> str_convert_to_default_;
+  typedef std::any (*bool_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  std::map<Option,bool_func_to_default> bool_convert_to_default_;
+  typedef std::any (*set_bool_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  std::map<Option,set_bool_func_to_default> set_bool_convert_to_default_;
+  typedef std::any (*set_str_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  std::map<Option,set_str_func_to_default> set_str_convert_to_default_;
+  typedef std::any (*set_int_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  std::map<Option,set_int_func_to_default> set_int_convert_to_default_;
+  typedef std::any (*vector_bool_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  std::map<Option,vector_bool_func_to_default> vector_bool_convert_to_default_;
+  typedef std::any (*vector_str_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  std::map<Option,vector_str_func_to_default> vector_str_convert_to_default_;
+
+  std::any convert_to_default_(const Option option, const std::any & val) {
+      std::string error_msg = "Missing conversion to default function for option ";
+      if (val.type() == typeid(int)) {
+        if( int_convert_to_default_.count(option) ) { 
+          return int_convert_to_default_[option](option,options_, val);
+        } else {
+          throw std::runtime_error(error_msg + option + 
+              ", converting from type int.");
+        }
+      } else if (val.type() == typeid(double)) { 
+        if ( double_convert_to_default_.count(option) ) {
+          return double_convert_to_default_[option](option,options_, val);
+        }else {
+          throw std::runtime_error(error_msg + option + ", converting from type double.");
+        }
+      } else if (val.type() == typeid(std::string)) { 
+        if ( str_convert_to_default_.count(option) ) {
+          return str_convert_to_default_[option](option,options_, val);
+        }else {
+          throw std::runtime_error(error_msg + option + 
+              ", converting from  type string.");
+        }
+      } else if (val.type() == typeid(bool)) { 
+        if ( bool_convert_to_default_.count(option) ) {
+          return bool_convert_to_default_[option](option,options_, val);
+        }else {
+          throw std::runtime_error(error_msg + option + 
+              ", converting from  type bool.");
+        }
+      } else if (val.type() == typeid(std::set<std::string>)) { 
+        if ( set_str_convert_to_default_.count(option) ) {
+          return set_str_convert_to_default_[option](option,options_, val);
+        }else {
+          throw std::runtime_error(error_msg + option + 
+              ", converting from  type set<string>.");
+        }
+      } else if (val.type() == typeid(std::set<bool>)) { 
+        if ( set_bool_convert_to_default_.count(option) ) {
+          return set_bool_convert_to_default_[option](option,options_, val);
+        }else {
+          throw std::runtime_error(error_msg + option + 
+              ", converting from  type set<bool>.");
+        }
+      } else if (val.type() == typeid(std::set<int>)) { 
+        if ( set_int_convert_to_default_.count(option) ) {
+          return set_int_convert_to_default_[option](option,options_, val);
+        }else {
+          throw std::runtime_error(error_msg + option + 
+              ", converting from  type set<int>.");
+        }
+      }
+      throw std::runtime_error("Conversion to the proposed default type is not supported for option " + option);
+  }
+
   template<class T>
     T convert_(Option option){
-      std::variant<int,double,std::string,bool,std::set<std::string>,std::set<bool>,std::vector<std::string>> val;
+      std::variant<int,double,std::string,bool,std::set<std::string>,std::set<bool>, std::set<int>, std::vector<std::string>> val;
       if (typeid(T) == typeid(int)) {
         if( int_convert_.count(option) ) { 
           return std::get<T>(val = int_convert_[option](option,options_));
         } else {
-          throw std::runtime_error("Missing conversion function for type.");
+          throw std::runtime_error("Missing conversion function for type int.");
         }
       } else if (typeid(T) == typeid(double)) { 
         if ( double_convert_.count(option) ) {
           return std::get<T>(val = double_convert_[option](option,options_));
         }else {
-          throw std::runtime_error("Missing conversion function for type.");
+          throw std::runtime_error("Missing conversion function for type double.");
         }
       } else if (typeid(T) == typeid(std::string)) { 
         if ( str_convert_.count(option) ) {
           return std::get<T>(val = str_convert_[option](option,options_));
         }else {
-          throw std::runtime_error("Missing conversion function for type.");
+          throw std::runtime_error("Missing conversion function for type string.");
         }
       } else if (typeid(T) == typeid(bool)) { 
         if ( bool_convert_.count(option) ) {
           return std::get<T>(val = bool_convert_[option](option,options_));
         }else {
-          throw std::runtime_error("Missing conversion function for type.");
+          throw std::runtime_error("Missing conversion function for type bool.");
         }
       } else if (typeid(T) == typeid(std::set<std::string>)) { 
         if ( set_str_convert_.count(option) ) {
           return std::get<T>(val = set_str_convert_[option](option,options_));
         }else {
-          throw std::runtime_error("Missing conversion function for type.");
+          throw std::runtime_error("Missing conversion function for type set<string>.");
         }
       } else if (typeid(T) == typeid(std::set<bool>)) { 
         if ( set_bool_convert_.count(option) ) {
           return std::get<T>(val = set_bool_convert_[option](option,options_));
         }else {
-          throw std::runtime_error("Missing conversion function for type.");
+          throw std::runtime_error("Missing conversion function for type set<bool>.");
+        }
+      } else if (typeid(T) == typeid(std::set<int>)) { 
+        if ( set_int_convert_.count(option) ) {
+          return std::get<T>(val = set_int_convert_[option](option,options_));
+        }else {
+          throw std::runtime_error("Missing conversion function for type set<int>.");
         }
       }
       throw std::runtime_error("Conversion to the proposed type is not supported");

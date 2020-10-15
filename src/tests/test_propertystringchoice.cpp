@@ -45,34 +45,70 @@ TEST_CASE("getPropertyOptions","[unit]") {
 TEST_CASE("getPropOption","[unit]"){ 
   PropertyStringChoice propStrChoice;
 
-  set<string> choice_enforced =
+  // Choice enforced can be returned as bool, an int or a string
+  set<string> choice_enforced_str =
     propStrChoice.getPropOption<set<string>>(Option::ENFORCED);
+  set<bool> choice_enforced_bool =
+    propStrChoice.getPropOption<set<bool>>(Option::ENFORCED);
+  set<int> choice_enforced_int =
+    propStrChoice.getPropOption<set<int>>(Option::ENFORCED);
   set<string> choices = propStrChoice.getPropOption<set<string>>(Option::ALLOWED_VALUES);
 
-  string enforced = *(choice_enforced.begin());
+  string enforced_str = *(choice_enforced_str.begin());
+  bool enforced_bool = *(choice_enforced_bool.begin());
+  int enforced_int = *(choice_enforced_int.begin());
  
-  std::cout << "Enforced " << enforced << std::endl; 
-  //REQUIRE(enforced == false);
+  // By default enforced is set to false
+  REQUIRE(enforced_str == "false");
+  REQUIRE(enforced_bool == false);
+  REQUIRE(enforced_int == 0);
+  // By default there is a single choice
+  REQUIRE(choices.size() == 1);
+  // The value is set to "NOT_DEFINED"
+  REQUIRE(*choices.begin() == "NOT_DEFINED");
+  
 }
 
 TEST_CASE("setPropOption", "[unit]"){
   PropertyStringChoice propStrChoice;
 
-  std::cout << "1a" << std::endl;
   propStrChoice.setPropOption(Option::ENFORCED, std::string("true"));
+
+  cout << "1" << endl;
+  set<string> choice_enforced_str =
+    propStrChoice.getPropOption<set<string>>(Option::ENFORCED);
+  cout << "2" << endl;
+  set<bool> choice_enforced_bool =
+    propStrChoice.getPropOption<set<bool>>(Option::ENFORCED);
+  cout << "3" << endl;
+  set<int> choice_enforced_int =
+    propStrChoice.getPropOption<set<int>>(Option::ENFORCED);
+
+  cout << "4" << endl;
+  string enforced_str = *(choice_enforced_str.begin());
+  bool enforced_bool = *(choice_enforced_bool.begin());
+  int enforced_int = *(choice_enforced_int.begin());
+ 
+  // By default enforced is set to false
+  cout << "5" << endl;
+  REQUIRE(enforced_str == "true");
+  REQUIRE(enforced_bool == true);
+  REQUIRE(enforced_int == 1);
+
+  cout << "6" << endl;
   set<string> choices{"true", "false"};
-  for ( string test : choices ) {
-    std::cout << "Order of set " << test << std::endl;
-  }
-  std::cout << "2a" << std::endl;
   propStrChoice.setPropOption(Option::ALLOWED_VALUES, choices);
 
+  cout << "7" << endl;
+  // true is a valid string choice
   string choice = "true";
-  std::cout << "3a" << std::endl;
-  propStrChoice.propValid(choice);
-  choice = "false";
-  propStrChoice.propValid(choice);
+  REQUIRE_NOTHROW(propStrChoice.propValid(choice));
 
+  // False is a valid choice should not throw
+  choice = "false";
+  REQUIRE_NOTHROW(propStrChoice.propValid(choice));
+
+  // blah is not a valid choice
   choice = "blah";
   REQUIRE_THROWS(propStrChoice.propValid(choice));
 
@@ -90,6 +126,5 @@ TEST_CASE("setPropOption", "[unit]"){
   REQUIRE(true_str);
 
   string on = *(choice_on.begin());
-  std::cout << "on " << on << std::endl;
   REQUIRE(on == "false");
 }

@@ -4,8 +4,8 @@ project (mamap)
 ##############################################################################
 # Defining options 
 ##############################################################################
-option(ENABLE_TESTS "Enable testing" OFF)
-option(ENABLE_UNIT_TESTING "Enable tests" ${ENABLE_TESTS})
+option(ENABLE_TESTING "Enable tests" ON)
+option(ENABLE_UNIT_TESTING "Enable tests" ${ENABLE_TESTING})
 option(ENABLE_PROFILING "Enable profiling" OFF)
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
 

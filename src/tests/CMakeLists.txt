@@ -6,7 +6,7 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   find_library (GCOV gcov)
 endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")    
 
-if(ENABLE_UNIT_TESTING)
+if(${ENABLE_UNIT_TESTING})
   foreach(PROG IN LISTS UNIT_TEST_SOURCE_FILES)
     message(STATUS "Generating test for ${PROG}")
     add_executable(unit_${PROG} ${PROG}.cpp)
@@ -16,6 +16,6 @@ if(ENABLE_UNIT_TESTING)
     target_link_libraries(unit_${PROG} libmap Catch2::Catch2)
     ParseAndAddCatchTests(unit_${PROG})
   endforeach(PROG)
-endif(ENABLE_UNIT_TESTING)
+endif()
 
 
