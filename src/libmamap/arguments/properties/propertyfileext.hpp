@@ -28,7 +28,7 @@ class PropertyFileExt
     return PropertyType::FILE_EXT;
   }
 
-  bool propValid(const std::any &fileNamePath);
+  virtual bool propValid(const std::any &fileNamePath) final;
   void setPropOption(Option option, std::string var);
   void setPropOption(Option option, std::set<std::string> var);
 };

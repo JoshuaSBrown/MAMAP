@@ -2,7 +2,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "io/arguments/properties/propertyfileext.hpp"
+#include "arguments/properties/propertyfileext.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -18,7 +18,7 @@ TEST_CASE("Property File Extension","[unit]") {
     PropertyFileExt propFileExt1("*");
     PropertyFileExt propFileExt2("");
     PropertyFileExt propFileExt3(".jpg");
-    CHECK_THROWS(PropertyFileExt propFileExt4("ffda.fd"));
+    CHECK_THROWS(PropertyFileExt("ffda.fd"));
     set<string> exts = {".png", ".gjf"};
     PropertyFileExt propFileExt5(exts);
   }
@@ -42,22 +42,17 @@ TEST_CASE("Property File Extension","[unit]") {
   cerr << "Testing: propValid" << endl;
   {
     PropertyFileExt propFileExt(".jpg");
-    bool valid = propFileExt.propValid("dir/file.jpg");
-    CHECK(valid);
+    CHECK(propFileExt.propValid("dir/file.jpg"));
     CHECK_THROWS(propFileExt.propValid("dir/file.jp"));
 
     PropertyFileExt propFileExt2("*");
-    valid = propFileExt2.propValid("dir/file.jpg");
-    CHECK(valid);
-    valid = propFileExt2.propValid("dir/file.jp");
-    CHECK(valid);
+    CHECK(propFileExt2.propValid("dir/file.jpg"));
+    CHECK(propFileExt2.propValid("dir/file.jp"));
 
     set<string> exts = {".png", ".gjf"};
     PropertyFileExt propFileExt3(exts);
-    valid = propFileExt3.propValid("Dir2/Path/File.png");
-    CHECK(valid);
-    valid = propFileExt3.propValid("Dir2/Path/File.gjf");
-    CHECK(valid);
+    CHECK(propFileExt3.propValid("Dir2/Path/File.png"));
+    CHECK(propFileExt3.propValid("Dir2/Path/File.gjf"));
     CHECK_THROWS(propFileExt3.propValid("dir/file.com"));
   }
 }

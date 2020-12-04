@@ -1,7 +1,7 @@
 
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
-#include "../libmamap/io/arguments/properties/propertyswitch.hpp"
+#include "arguments/properties/propertyswitch.hpp"
 #include <cassert>
 #include <exception>
 #include <iostream>
@@ -36,40 +36,17 @@ TEST_CASE("Property Switch","[unit]") {
   cerr << "Testing: propValid" << endl;
   {
     PropertySwitch propSwitch;
-    bool valid = propSwitch.propValid(0);
-    assert(valid);
-    valid = propSwitch.propValid(1);
-    assert(valid);
-    valid = propSwitch.propValid();
-    assert(valid);
-    bool excep = false;
-    try {
-      propSwitch.propValid(-1);
-    } catch (...) {
-      excep = true;
-    }
-    assert(excep);
-
-    excep = false;
-    try {
-      propSwitch.propValid(2);
-    } catch (...) {
-      excep = true;
-    }
-    assert(excep);
-
-    valid = propSwitch.propValid("ON");
-    assert(valid);
-    valid = propSwitch.propValid("OFF");
-    assert(valid);
-    valid = propSwitch.propValid("TRUE");
-    assert(valid);
-    valid = propSwitch.propValid("FALSE");
-    assert(valid);
-    valid = propSwitch.propValid("0");
-    assert(valid);
-    valid = propSwitch.propValid("1");
-    assert(valid);
+    CHECK(propSwitch.propValid(0));
+    CHECK(propSwitch.propValid(1));
+    CHECK(propSwitch.propValid());
+    CHECK_THROWS(propSwitch.propValid(-1));
+    CHECK_THROWS(propSwitch.propValid(2));
+    CHECK(propSwitch.propValid("ON"));
+    CHECK(propSwitch.propValid("OFF"));
+    CHECK(propSwitch.propValid("TRUE"));
+    CHECK(propSwitch.propValid("FALSE"));
+    CHECK(propSwitch.propValid("0"));
+    CHECK(propSwitch.propValid("1"));
   }
 
   cerr << "Testing: setPropOption" << endl;
@@ -77,13 +54,7 @@ TEST_CASE("Property Switch","[unit]") {
     PropertySwitch propSwitch;
     propSwitch.setPropOption(Option::DEFAULT, "ON");
     propSwitch.setPropOption(Option::DEFAULT, "OFF");
-    //    propSwitch.propValid(0);
-    //    bool excep = false;
-    //    try {
-    //      propSwitch.propValid(-1);
-    //    } catch (...) {
-    //      excep = true;
-    //    }
-    //    assert(excep);
+    CHECK(propSwitch.propValid(0));
+    CHECK_THROWS(propSwitch.propValid(-1));
   }
 }

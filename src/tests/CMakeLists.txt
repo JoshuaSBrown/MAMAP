@@ -1,10 +1,21 @@
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/testfile.pun
           DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/testfile.pun)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dir/file.jpg
+  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/dir/file.jpg)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dir/file.jp
+  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/dir/file.jp)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Dir2/file.png
+  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Dir2/file.png)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Dir2/file.gjf
+  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Dir2/file.gjf)
 
 list( APPEND UNIT_TEST_SOURCE_FILES
   test_propertyfileexist
+  test_propertyfileext
+  test_propertynumerical
   test_propertystringchoice
   test_propertystring
+  test_propertyswitch
 )
 
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")    

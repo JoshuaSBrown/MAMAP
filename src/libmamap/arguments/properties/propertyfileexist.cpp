@@ -27,7 +27,12 @@ namespace mamap {
     }
 
     std::any convertStrToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
-      std::string value = std::any_cast<std::string>(val);
+      std::string value;
+      if ( val.type() == typeid(std::string) ) {
+        value = std::any_cast<std::string>(val);
+      } else if ( val.type() == typeid(const char *) ) {
+        value = string(std::any_cast<const char *>(val));
+      }
       if( to_upper(value) == "TRUE" ) {
         return true; 
       } else if( to_upper(value) == "FALSE") {

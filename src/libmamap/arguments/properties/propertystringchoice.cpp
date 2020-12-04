@@ -56,9 +56,14 @@ namespace mamap {
     }
 
     std::any convertStrEnforcedToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
-      string values = std::any_cast<string>(val);
+      std::string value;
+      if ( val.type() == typeid(std::string) ) {
+        value = std::any_cast<std::string>(val);
+      } else if ( val.type() == typeid(const char *) ) {
+        value = string(std::any_cast<const char *>(val));
+      }
       set<string> default_values;
-      default_values.insert(values);
+      default_values.insert(value);
       return default_values;
     }
 

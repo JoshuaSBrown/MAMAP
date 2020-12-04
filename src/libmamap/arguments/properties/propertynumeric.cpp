@@ -4,6 +4,7 @@
 #include "propertyobject.hpp"
 
 #include <limits>
+#include <sstream>
 #include <typeinfo>
 
 using namespace std;
@@ -71,38 +72,49 @@ PropertyNumeric::PropertyNumeric(void) {
     double_convert_to_default_[Option::MAX] = &mamap::convertDoubleBoundToDefault_;
 
     // Set Defaults
-    double min_val = std::numeric_limits<double>::min();
+    double min_val = std::numeric_limits<double>::lowest();
+    std::cout << "Min val set to " << min_val << std::endl;
     double max_val = std::numeric_limits<double>::max();
+    std::cout << "Max val set to " << max_val << std::endl;
     setPropOption_(Option::MIN, min_val);
     setPropOption_(Option::MAX, max_val);
 }
 
 bool PropertyNumeric::propValid(const std::any & val) {
 
-  if( val.type() != typeid(int) || val.type() != typeid(double) ){
-    string err = "The value provided to the property is not a supported type.";
-    throw invalid_argument(err);
-  }
   // If the properties have not been set then they will be 
   // valid as long as they are of a numeric type
   double converted_val;
   if ( val.type() == typeid(int) ){
     converted_val = static_cast<double>(any_cast<int>(val));
-  } else {
+  } else if (val.type() == typeid(double)) {
     converted_val = any_cast<double>(val);
+  } else if ( val.type() == typeid(size_t) ){
+    converted_val = static_cast<double>(any_cast<size_t>(val));
+  } else if (val.type() == typeid(const double)) {
+    converted_val = any_cast<const double>(val);
+  } else if ( val.type() == typeid(const size_t) ){
+    converted_val = static_cast<double>(any_cast<const size_t>(val));
+  } else if (val.type() == typeid(const int)) {
+    converted_val = static_cast<double>(any_cast<const int>(val));
+  } else {
+    string err = "The value provided to the property is not a supported type.";
+    throw invalid_argument(err);
   }
 
   // ignore it otherwise, there is no min option 
   double min_val = any_cast<double>(options_[Option::MIN]);
   if ( converted_val < min_val ) {
-    string err = "The value provided to the property is less than the minimum allowed.";
-    throw invalid_argument(err);
+    std::stringstream err;
+    err <<  "The value provided to the property is less than the minimum allowed. The value passed in is "  << converted_val << " the minimum allowed value is "  << min_val;
+    throw invalid_argument(err.str());
   }
   // ignore it otherwise, there is no min option 
   double max_val = any_cast<double>(options_[Option::MAX]);
-  if ( converted_val < max_val ) {
-    string err = "The value provided to the property is greater than the maximum allowed.";
-    throw invalid_argument(err);
+  if ( converted_val > max_val ) {
+    std::stringstream err;
+    err <<  "The value provided to the property is greater than the maximum allowed. The value passed in is "  << converted_val << " the minimum allowed value is "  << max_val;
+    throw invalid_argument(err.str());
   }
   return true;
 }
