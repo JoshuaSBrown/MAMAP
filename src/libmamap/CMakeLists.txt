@@ -1,6 +1,8 @@
 
 file(GLOB MAP_SOURCE_FILES 
   arguments/properties/propertystringchoice.cpp
+  arguments/properties/propertyfileexist.cpp
+  arguments/properties/propertystring.cpp
   arguments/properties/propertyobject.cpp
   string_support.cpp 
   )
