@@ -2,7 +2,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "io/arguments/properties/propertyfileexist.hpp"
+#include "arguments/properties/propertyfileexist.hpp"
 #include <cassert>
 #include <exception>
 #include <iostream>
@@ -25,7 +25,7 @@ TEST_CASE("Property File Exists","[unit]") {
   {
     PropertyFileExist propFileExist;
     PropertyType type = propFileExist.getPropertyType();
-    CHECK(type == PropertyTYpe::FILE_EXIST);
+    CHECK(type == PropertyType::FILE_EXISTS);
   }
 
   cerr << "Testing: getPropertyOptions" << endl;
@@ -57,10 +57,10 @@ TEST_CASE("Property File Exists","[unit]") {
     PropertyFileExist propFileExist1(true);
     PropertyFileExist propFileExist2(false);
 
-    bool fileExist = propFileExist1.getPropOption(Option::MUST_EXIST);
+    bool fileExist = propFileExist1.getPropOption<bool>(Option::MUST_EXIST);
     CHECK(fileExist);
 
-    fileExist = propFileExist2.getPropOption(Option::MUST_EXIST);
+    fileExist = propFileExist2.getPropOption<bool>(Option::MUST_EXIST);
     CHECK(fileExist == false);
   }
 

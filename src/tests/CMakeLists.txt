@@ -1,5 +1,10 @@
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/testfile.pun
+          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/testfile.pun)
+
 list( APPEND UNIT_TEST_SOURCE_FILES
+  test_propertyfileexist
   test_propertystringchoice
+  test_propertystring
 )
 
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")    

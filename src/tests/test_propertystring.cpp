@@ -2,7 +2,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "../libmamap/io/arguments/properties/propertystring.hpp"
+#include "arguments/properties/propertystring.hpp"
 #include <cassert>
 #include <exception>
 #include <iostream>
@@ -21,7 +21,9 @@ TEST_CASE("Property String","[unit]") {
   cerr << "Testing: getPropertyName" << endl;
   {
     PropertyString propString;
+    std::cout << __LINE__ << std::endl;
     PropertyType type = propString.getPropertyType();
+    std::cout << __LINE__ << std::endl;
     REQUIRE(type == PropertyType::STRING);
   }
 
@@ -29,8 +31,11 @@ TEST_CASE("Property String","[unit]") {
   {
 
     PropertyString propString;
+    std::cout << __LINE__ << std::endl;
     auto options = propString.getPropertyOptions();
+    std::cout << __LINE__ << std::endl;
     Option opt = options.at(0);
+    std::cout << __LINE__ << std::endl;
     REQUIRE(opt == Option::MIN_LENGTH);
     opt = options.at(1);
     REQUIRE(opt == Option::MAX_LENGTH);
@@ -47,8 +52,11 @@ TEST_CASE("Property String","[unit]") {
   {
     PropertyString propString;
     size_t val = 3;
+    std::cout << "1" << std::endl;
     propString.setPropOption(Option::MAX_LENGTH, val);
+    std::cout << "2" << std::endl;
     propString.propValid("");
+    std::cout << "3" << std::endl;
     CHECK_THROWS(propString.propValid("Hello"));
     
     val = 4;

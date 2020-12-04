@@ -70,36 +70,31 @@ TEST_CASE("getPropOption","[unit]"){
 }
 
 TEST_CASE("setPropOption", "[unit]"){
+
   PropertyStringChoice propStrChoice;
 
   propStrChoice.setPropOption(Option::ENFORCED, std::string("true"));
 
-  cout << "1" << endl;
+  // Checking default values
   set<string> choice_enforced_str =
     propStrChoice.getPropOption<set<string>>(Option::ENFORCED);
-  cout << "2" << endl;
   set<bool> choice_enforced_bool =
     propStrChoice.getPropOption<set<bool>>(Option::ENFORCED);
-  cout << "3" << endl;
   set<int> choice_enforced_int =
     propStrChoice.getPropOption<set<int>>(Option::ENFORCED);
 
-  cout << "4" << endl;
   string enforced_str = *(choice_enforced_str.begin());
   bool enforced_bool = *(choice_enforced_bool.begin());
   int enforced_int = *(choice_enforced_int.begin());
  
   // By default enforced is set to false
-  cout << "5" << endl;
   REQUIRE(enforced_str == "true");
   REQUIRE(enforced_bool == true);
   REQUIRE(enforced_int == 1);
 
-  cout << "6" << endl;
   set<string> choices{"true", "false"};
   propStrChoice.setPropOption(Option::ALLOWED_VALUES, choices);
 
-  cout << "7" << endl;
   // true is a valid string choice
   string choice = "true";
   REQUIRE_NOTHROW(propStrChoice.propValid(choice));
