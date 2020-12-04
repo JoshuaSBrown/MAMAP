@@ -7,9 +7,6 @@
 namespace mamap {
 
 class PropertyString : public PropertyObject {
- private:
-  void stringValid(const std::string& val) const;
-
  public:
   PropertyString(void);
 
@@ -17,12 +14,7 @@ class PropertyString : public PropertyObject {
     return PropertyType::STRING;
   }
 
-  bool propValid(const std::any& val) {
-
-    std::string value = std::any_cast<std::string>(val);
-    stringValid(value);
-    return true;
-  }
+  virtual bool propValid(const std::any& val) final;
 };
 
 }  // namespace mamap

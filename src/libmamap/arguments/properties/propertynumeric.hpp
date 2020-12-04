@@ -12,13 +12,10 @@ namespace mamap {
 class PropertyNumeric : public PropertyObject {
 
   // Override the setting make sure that a double is passed in as the numeric type
-  virtual void setPropOption_(const Option & option, const std::any & val) final;
+  //virtual void setPropOption_(const Option & option, const std::any & val) final;
 
  public:
-  PropertyNumeric(void) {
-    options_[Option::MIN] = std::numeric_limits<double>::min;
-    options_[Option::MAX] = std::numeric_limits<double>::max; 
-  };
+  PropertyNumeric(void);
 
   virtual PropertyType getPropertyType(void) const noexcept final {
     return PropertyType::NUMERIC;

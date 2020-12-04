@@ -3,6 +3,7 @@
 #define _MAMAP_PROPERTY_OBJECT_HPP
 
 #include <any>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <set>
@@ -82,6 +83,8 @@ class PropertyObject {
   // Convert from the default to the type
   typedef int (*int_func)(Option,std::map<Option, std::any>); 
   std::map<Option,int_func> int_convert_;
+  typedef size_t (*size_t_func)(Option,std::map<Option, std::any>); 
+  std::map<Option,size_t_func> size_t_convert_;
   typedef double (*double_func)(Option,std::map<Option, std::any>); 
   std::map<Option,double_func> double_convert_;
   typedef std::string (*str_func)(Option,std::map<Option, std::any>); 
@@ -102,6 +105,8 @@ class PropertyObject {
   // Convert from the supported types to the default to store it
   typedef std::any (*int_func_to_default)(Option,std::map<Option, std::any>, std::any); 
   std::map<Option,int_func_to_default> int_convert_to_default_;
+  typedef std::any (*size_t_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  std::map<Option,size_t_func_to_default> size_t_convert_to_default_;
   typedef std::any (*double_func_to_default)(Option,std::map<Option, std::any>, std::any); 
   std::map<Option,double_func_to_default> double_convert_to_default_;
   typedef std::any (*str_func_to_default)(Option,std::map<Option, std::any>, std::any); 
@@ -127,6 +132,13 @@ class PropertyObject {
         } else {
           throw std::runtime_error(error_msg + option + 
               ", converting from type int.");
+        }
+      } else if (val.type() == typeid(size_t)) { 
+        if( size_t_convert_to_default_.count(option) ) { 
+          return size_t_convert_to_default_[option](option,options_, val);
+        } else {
+          throw std::runtime_error(error_msg + option + 
+              ", converting from type size_t.");
         }
       } else if (val.type() == typeid(double)) { 
         if ( double_convert_to_default_.count(option) ) {
@@ -174,47 +186,53 @@ class PropertyObject {
   }
 
   template<class T>
-    T convert_(Option option){
-      std::variant<int,double,std::string,bool,std::set<std::string>,std::set<bool>, std::set<int>, std::vector<std::string>> val;
+    T convert_(Option option) const {
+      std::variant<int,size_t,double,std::string,bool,std::set<std::string>,std::set<bool>, std::set<int>, std::vector<std::string>> val;
       if (typeid(T) == typeid(int)) {
         if( int_convert_.count(option) ) { 
-          return std::get<T>(val = int_convert_[option](option,options_));
+          return std::get<T>(val = int_convert_.at(option)(option,options_));
         } else {
           throw std::runtime_error("Missing conversion function for type int.");
         }
+      } else if (typeid(T) == typeid(size_t)) { 
+        if( size_t_convert_.count(option) ) { 
+          return std::get<T>(val = size_t_convert_.at(option)(option,options_));
+        } else {
+          throw std::runtime_error("Missing conversion function for type size_t.");
+        }
       } else if (typeid(T) == typeid(double)) { 
         if ( double_convert_.count(option) ) {
-          return std::get<T>(val = double_convert_[option](option,options_));
+          return std::get<T>(val = double_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type double.");
         }
       } else if (typeid(T) == typeid(std::string)) { 
         if ( str_convert_.count(option) ) {
-          return std::get<T>(val = str_convert_[option](option,options_));
+          return std::get<T>(val = str_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type string.");
         }
       } else if (typeid(T) == typeid(bool)) { 
         if ( bool_convert_.count(option) ) {
-          return std::get<T>(val = bool_convert_[option](option,options_));
+          return std::get<T>(val = bool_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type bool.");
         }
       } else if (typeid(T) == typeid(std::set<std::string>)) { 
         if ( set_str_convert_.count(option) ) {
-          return std::get<T>(val = set_str_convert_[option](option,options_));
+          return std::get<T>(val = set_str_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type set<string>.");
         }
       } else if (typeid(T) == typeid(std::set<bool>)) { 
         if ( set_bool_convert_.count(option) ) {
-          return std::get<T>(val = set_bool_convert_[option](option,options_));
+          return std::get<T>(val = set_bool_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type set<bool>.");
         }
       } else if (typeid(T) == typeid(std::set<int>)) { 
         if ( set_int_convert_.count(option) ) {
-          return std::get<T>(val = set_int_convert_[option](option,options_));
+          return std::get<T>(val = set_int_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type set<int>.");
         }
@@ -247,7 +265,7 @@ class PropertyObject {
   }
 
   template<class T>
-  T getPropOption(const Option &option) {
+  T getPropOption(const Option &option) const {
     if (!propOptionValid_(option)) {
       std::string err = " An unrecognized property option was detected.";
       throw std::invalid_argument(err);
@@ -257,7 +275,7 @@ class PropertyObject {
       std::string err = "Conversion of property option's value to type not allowed.";
       throw std::invalid_argument(err);
     }
-
+ 
     return convert_<T>(option);
     //return std::any_cast<T>(options_.at(option));
   }

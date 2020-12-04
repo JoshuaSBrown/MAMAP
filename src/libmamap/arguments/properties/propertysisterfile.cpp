@@ -50,7 +50,14 @@ void PropertySisterFile::checkExt(const string& ext) const {
 
 bool PropertySisterFile::propValid(const std::any & name_and_path) {
 
-  std::string fileNamePath = any_cast<std::string>(name_and_path); 
+  std::string fileNamePath; 
+  if ( name_and_path.type() == typeid(char *) ) {
+    fileNamePath = std::string(std::any_cast<char *>(name_and_path));
+  } else if ( name_and_path.type() == typeid(const char *) ) {
+    fileNamePath = std::string(std::any_cast<const char *>(name_and_path));
+  } else {
+    fileNamePath = std::any_cast<std::string>(name_and_path);
+  }
 
   string fileName = lastStringInPath(fileNamePath);
   string path = getPath(fileNamePath);

@@ -21,7 +21,7 @@ class PropertyFileExist : public PropertyObject {
     return PropertyType::FILE_EXISTS;
   }
 
-  void postCheck(void) const;
+  void postCheck(void) const final;
 };
 
 }  // namespace mamap

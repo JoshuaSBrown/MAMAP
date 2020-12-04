@@ -16,6 +16,7 @@ namespace mamap {
       set<bool> values;
       // Because the default is a set of strings
       set<string> stored_values = std::any_cast<set<string>>(options_.at(option));
+      std::cout << "getSetBoolEnforced size of stored values " << stored_values.size() << std::endl;
       for ( std::string val : stored_values){
         if( to_upper(val) == "TRUE" ) {
           values.insert(true);
@@ -63,7 +64,6 @@ namespace mamap {
 
     std::set<string> getSetStrEnforced_(Option option, std::map<Option, std::any> options_){
       // Because the default is a set of strings
-      std::cout << "Any cast to set<string> for Enforced" << std::endl;
       set<string> stored_values = std::any_cast<set<string>>(options_.at(option));
       return stored_values;
     }
@@ -106,33 +106,18 @@ namespace mamap {
       if ( stored_values.size() > 1 ) {
         throw std::runtime_error("Cannot convert option value to string because there is more than a single value.");
       }
-    //  int ind = 0;
-     // for ( string item : stored_values ) {
-      //  std::cout << ind << " Content allowed_values " << item << std::endl;
-     //   ++ind;
-     // }
       return *stored_values.begin();
     }
 
     std::set<string> getSetStrAllowedValues_(Option option, std::map<Option, std::any> options_){
       // Because the default is a set of strings
       set<string> stored_values = std::any_cast<set<string>>(options_.at(option));
-    //  int ind = 0;
-     // for ( string item : stored_values ) {
-      //  std::cout << ind << " Content allowed_values " << item << std::endl;
-     //   ++ind;
-     // }
       return stored_values;
     }
 
     std::any convertSetStrAllowedValuesToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
       // Because the default is a set of strings
       return val;
-    //  int ind = 0;
-     // for ( string item : stored_values ) {
-      //  std::cout << ind << " Content allowed_values " << item << std::endl;
-     //   ++ind;
-     // }
     }
 
     std::vector<string> getVectorStrAllowedValues_(Option option, std::map<Option, std::any> options_){
@@ -183,9 +168,6 @@ namespace mamap {
     set_str_convert_to_default_[Option::ENFORCED] = &mamap::convertSetStrEnforcedToDefault_;
     set_int_convert_to_default_[Option::ENFORCED] = &mamap::convertSetIntEnforcedToDefault_;
 
-    std::cout << "Size of function in set_str_convert_to_default_ " << set_str_convert_to_default_.size() << std::endl;
-    std::cout << "Size of function in set_str_convert_to_default_ count enforced " << set_str_convert_to_default_.count(Option::ENFORCED) << std::endl;
-
     default_option_type_.insert(std::pair<Option, type_index>(Option::ALLOWED_VALUES, type_index(typeid(set<string>))));
 
     allowed_option_types_[Option::ALLOWED_VALUES].push_back(type_index(typeid(set<string>)));
@@ -200,6 +182,7 @@ namespace mamap {
     vector_str_convert_to_default_[Option::ALLOWED_VALUES] = &mamap::convertVectorStrAllowedValuesToDefault_;
 
     // Note setting the options should go after assigning the correct function pointers
+    // Setting defaults
     set<string> set_var1{"false"};
     setPropOption_(Option::ENFORCED, set_var1);
 
@@ -257,10 +240,8 @@ namespace mamap {
     std::cout << "2" << std::endl;
     set<string> opt_val;
     if(options_[Option::ENFORCED].type() == typeid(std::string) ){
-      std::cout << "Converting to string and inserting" << std::endl;
       opt_val.insert(std::any_cast<string>(options_[Option::ENFORCED]));
     }else {
-      std::cout << "Converting to set string and writing" << std::endl;
       opt_val = getPropOption<set<string>>(Option::ENFORCED);
     }
     string val = *(opt_val.begin());
