@@ -1,7 +1,10 @@
 
 file(GLOB MAP_SOURCE_FILES 
+  arguments/argumentfile.cpp
   arguments/argumentobject.cpp
   arguments/argumentnumerical.cpp
+  arguments/argumentstring.cpp
+  arguments/argumentswitch.cpp
   arguments/properties/propertystringchoice.cpp
   arguments/properties/propertyfileexist.cpp
   arguments/properties/propertyfileext.cpp
