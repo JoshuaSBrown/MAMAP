@@ -4,6 +4,7 @@ file(GLOB MAP_SOURCE_FILES
   arguments/properties/propertyfileexist.cpp
   arguments/properties/propertyfileext.cpp
   arguments/properties/propertynumeric.cpp
+  arguments/properties/propertysisterfile.cpp
   arguments/properties/propertystring.cpp
   arguments/properties/propertyswitch.cpp
   arguments/properties/propertyobject.cpp

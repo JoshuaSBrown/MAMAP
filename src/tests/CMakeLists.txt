@@ -13,6 +13,7 @@ list( APPEND UNIT_TEST_SOURCE_FILES
   test_propertyfileexist
   test_propertyfileext
   test_propertynumerical
+  test_propertysisterfile
   test_propertystringchoice
   test_propertystring
   test_propertyswitch

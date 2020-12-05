@@ -197,47 +197,6 @@ namespace mamap {
 
   }
 
-  /*void PropertyStringChoice::setPropOption( option,
-    set<string> set_vars) {
-
-    if (option.compare("STRING_CHOICES") == 0) {
-    setPropOption_(option, set_vars);
-    return;
-    } else if (option.compare("STRING_CHOICE_ENFORCED") == 0) {
-    if (set_vars.size() > 1) {
-    string err = "";
-    for (auto var : set_vars) {
-    err.append(var);
-    err.append(" ");
-    }
-    trim(err);
-    throw invalid_argument(
-    "Option STRING_CHOICE_ENFORCED only accepts one "
-    "value either true or false you have passed the following values " +
-    err);
-    }
-
-    string var = *(set_vars.begin());
-    if (var.compare("false") == 0 || var.compare("true") == 0) {
-    setPropOption_(option, set_vars);
-    return;
-    } else {
-    throw invalid_argument("The option " + option +
-    " can only be set to values"
-    " of true or false you have set it to " +
-    var);
-    }
-    }
-    string vars = "";
-    for (auto var : set_vars) {
-    vars.append(var);
-    vars.append(" ");
-    }
-    trim(vars);
-    throw invalid_argument("Unrecognized option value combo " + option + " " +
-    vars);
-    }*/
-
   bool PropertyStringChoice::propValid(const any& choice) {
 
     std::cout << "1" << std::endl;

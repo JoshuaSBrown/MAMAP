@@ -1,5 +1,7 @@
 #include "propertyobject.hpp"
 
+#include <sstream>
+
 namespace mamap {
   std::ostream& operator<<(std::ostream& out, const Option option){
     if( option == Option::NO_OPTIONS) {

@@ -2,8 +2,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "../libmamap/io/arguments/properties/propertysisterfile.hpp"
-#include <cassert>
+#include "arguments/properties/propertysisterfile.hpp"
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -25,8 +24,8 @@ TEST_CASE("Property Sister File","[unit]") {
   cerr << "Testing: getPropertyName" << endl;
   {
     PropertySisterFile propSisterFile;
-    string name = propSisterFile.getPropertyName();
-    assert(name.compare("PROPERTY_SISTER_FILE") == 0);
+    PropertyType type = propSisterFile.getPropertyType();
+    CHECK(type == PropertyType::SISTER_FILE);
   }
 
   cerr << "Testing: getPropertyOptions" << endl;
@@ -42,27 +41,27 @@ TEST_CASE("Property Sister File","[unit]") {
     bool sister_exists = false;
 
     for (auto opt : options) {
-      if (opt.compare("ALLOWED_SISTER_FILE_EXT") == 0) {
+      if (opt == Option::ALLOWED_VALUES) {
         allowed_file = true;
       }
-      if (opt.compare("SISTER_FILE_NAME") == 0) {
+      if (opt == Option::FILE_NAME) {
         sister_name = true;
       }
-      if (opt.compare("SISTER_FILE_PATH") == 0) {
+      if (opt == Option::FILE_PATH) {
         sister_path = true;
       }
-      if (opt.compare("SISTER_FILE_PATH_NAME") == 0) {
+      if (opt == Option::FILE_PATH_NAME) {
         sister_name_path = true;
       }
-      if (opt.compare("SISTER_FILE_EXISTS") == 0) {
+      if (opt == Option::DOES_EXIST) {
         sister_exists = true;
       }
     }
-    assert(allowed_file);
-    assert(sister_name);
-    assert(sister_path);
-    assert(sister_name_path);
-    assert(sister_exists);
+    CHECK(allowed_file);
+    CHECK(sister_name);
+    CHECK(sister_path);
+    CHECK(sister_name_path);
+    CHECK(sister_exists);
   }
 
   cerr << "Testing: getPropOption" << endl;
@@ -70,47 +69,47 @@ TEST_CASE("Property Sister File","[unit]") {
     PropertySisterFile propSisterFile1;
 
     vector<string> allowed_ext =
-        propSisterFile1.getPropOption("ALLOWED_SISTER_FILE_EXT");
+        propSisterFile1.getPropOption<vector<string>>(Option::ALLOWED_VALUES);
     vector<string> file_name =
-        propSisterFile1.getPropOption("SISTER_FILE_NAME");
+        propSisterFile1.getPropOption<vector<string>>(Option::FILE_NAME);
     vector<string> file_path =
-        propSisterFile1.getPropOption("SISTER_FILE_PATH");
+        propSisterFile1.getPropOption<vector<string>>(Option::FILE_PATH);
     vector<string> file_path_name =
-        propSisterFile1.getPropOption("SISTER_FILE_PATH_NAME");
-    vector<string> fileExist =
-        propSisterFile1.getPropOption("SISTER_FILE_EXISTS");
+        propSisterFile1.getPropOption<vector<string>>(Option::FILE_PATH_NAME);
+    vector<bool> fileExist =
+        propSisterFile1.getPropOption<vector<bool>>(Option::DOES_EXIST);
 
-    assert(allowed_ext.at(0).compare("NOT_DEFINED") == 0);
-    assert(file_name.at(0).compare("NOT_DEFINED") == 0);
-    assert(file_path.at(0).compare("NOT_DEFINED") == 0);
-    assert(file_path_name.at(0).compare("NOT_DEFINED") == 0);
-    assert(fileExist.at(0).compare("false") == 0);
+    CHECK(allowed_ext.at(0) == "NOT_DEFINED");
+    CHECK(file_name.at(0) == "NOT_DEFINED");
+    CHECK(file_path.at(0) == "NOT_DEFINED");
+    CHECK(file_path_name.at(0) == "NOT_DEFINED");
+    CHECK(fileExist.at(0) == false);
   }
 
   cerr << "Testing: getPropOption" << endl;
   {
     PropertySisterFile propSisterFile1;
 
-    propSisterFile1.setPropOption("ALLOWED_SISTER_FILE_EXT", ".pun");
+    propSisterFile1.setPropOption(Option::ALLOWED_VALUES, ".pun");
 
     string fileName = "testfile.log";
     propSisterFile1.propValid(fileName);
     vector<string> allowed_ext =
-        propSisterFile1.getPropOption("ALLOWED_SISTER_FILE_EXT");
+        propSisterFile1.getPropOption<vector<string>>(Option::ALLOWED_VALUES);
     vector<string> file_name =
-        propSisterFile1.getPropOption("SISTER_FILE_NAME");
+        propSisterFile1.getPropOption<vector<string>>(Option::FILE_NAME);
     vector<string> file_path =
-        propSisterFile1.getPropOption("SISTER_FILE_PATH");
+        propSisterFile1.getPropOption<vector<string>>(Option::FILE_PATH);
     vector<string> file_path_name =
-        propSisterFile1.getPropOption("SISTER_FILE_PATH_NAME");
-    vector<string> fileExist =
-        propSisterFile1.getPropOption("SISTER_FILE_EXISTS");
+        propSisterFile1.getPropOption<vector<string>>(Option::FILE_PATH_NAME);
+    vector<bool> fileExist =
+        propSisterFile1.getPropOption<vector<bool>>(Option::DOES_EXIST);
 
-    assert(allowed_ext.at(0).compare(".pun") == 0);
+    CHECK(allowed_ext.at(0) == ".pun");
 
-    assert(file_name.at(0).compare("testfile.pun") == 0);
-    assert(file_path.at(0).compare("") == 0);
-    assert(file_path_name.at(0).compare("testfile.pun") == 0);
-    assert(fileExist.at(0).compare("true") == 0);
+    CHECK(file_name.at(0) == "testfile.pun");
+    CHECK(file_path.at(0) == "");
+    CHECK(file_path_name.at(0) == "testfile.pun");
+    CHECK(fileExist.at(0));
   }
 }
