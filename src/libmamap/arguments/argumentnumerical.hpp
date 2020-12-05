@@ -9,7 +9,6 @@ namespace mamap {
 
 class ArgumentNumerical : public ArgumentObject {
  private:
-  std::string getName_(void) const { return "ARGUMENT_DOUBLE"; }
   void registerProperties_(void);
 
  public:

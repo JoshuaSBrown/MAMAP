@@ -1,5 +1,7 @@
 
 file(GLOB MAP_SOURCE_FILES 
+  arguments/argumentobject.cpp
+  arguments/argumentnumerical.cpp
   arguments/properties/propertystringchoice.cpp
   arguments/properties/propertyfileexist.cpp
   arguments/properties/propertyfileext.cpp
