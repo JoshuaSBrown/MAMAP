@@ -1,8 +1,16 @@
 #include "propertyobject.hpp"
 
-#include <sstream>
-
 namespace mamap {
+
+  std::any all_convert_(Option option,std::map<Option, std::any> options) {
+    std::cout << "grabbing option in all_convert" << std::endl;
+    if( options.count(option)==0 ) {
+      std::string err = "Error option is not available for property, Option: " + option; 
+      throw std::runtime_error(err);
+    }
+    return options.at(option);
+  }
+
   std::ostream& operator<<(std::ostream& out, const Option option){
     if( option == Option::NO_OPTIONS) {
       return out << std::string("NO_OPTIONS");
@@ -68,4 +76,23 @@ namespace mamap {
     }
     return str;
   }
+
+  std::string operator+(std::string str, const PropertyType prop) {
+    if( prop == PropertyType::UNKNOWN) {
+      return str + std::string("UNKNOWN");
+    } else if(prop == PropertyType::NUMERIC) {
+      return str + std::string("NUMERIC");
+    } else if(prop == PropertyType::FILE_EXISTS) {
+      return str + std::string("FILE_EXISTS");
+    } else if(prop == PropertyType::FILE_EXT) {
+      return str + std::string("FILE_EXT");
+    } else if(prop == PropertyType::SISTER_FILE) {
+      return str + std::string("SISTER_FILE");
+    } else if(prop == PropertyType::STRING) {
+      return str + std::string("STRING");
+    } else if(prop == PropertyType::STRING_CHOICE) {
+      return str + std::string("SWITCH");
+    }
+    return str;
+  } 
 }
