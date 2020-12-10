@@ -14,7 +14,7 @@ class ArgumentNumerical : public ArgumentObject {
  public:
 
   virtual ArgumentType getArgumentType(void) const noexcept final 
-  { return ArgumentType::NUMERICAL; }
+  { return ArgumentType::NUMERIC; }
 
   virtual std::type_index getValueType(void) const noexcept final {
     return typeid(double);

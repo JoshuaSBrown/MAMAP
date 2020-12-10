@@ -1,10 +1,12 @@
 
 file(GLOB MAP_SOURCE_FILES 
+  argumentparser.cpp
   arguments/argumentfile.cpp
   arguments/argumentobject.cpp
   arguments/argumentnumerical.cpp
   arguments/argumentstring.cpp
   arguments/argumentswitch.cpp
+  arguments/argumenttypes.cpp
   arguments/properties/propertystringchoice.cpp
   arguments/properties/propertyfileexist.cpp
   arguments/properties/propertyfileext.cpp
@@ -13,6 +15,8 @@ file(GLOB MAP_SOURCE_FILES
   arguments/properties/propertystring.cpp
   arguments/properties/propertyswitch.cpp
   arguments/properties/propertyobject.cpp
+  arguments/properties/propertyoptions.cpp
+  arguments/properties/propertytypes.cpp
   string_support.cpp 
   )
 

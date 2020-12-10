@@ -10,13 +10,6 @@
 using namespace std;
 
 namespace mamap {
-/*void PropertyNumeric::setPropOption_(const Option & option, const std::any & val) {
-  if ( val.type() != typeid(double)){
-    string err = "The Min and Max options of the numeric property must be a double.";
-    throw invalid_argument(err);
-  }
-  PropertyObject::setPropOption_(option, val);
-}*/
 
 namespace {
 
@@ -73,9 +66,7 @@ PropertyNumeric::PropertyNumeric(void) {
 
     // Set Defaults
     double min_val = std::numeric_limits<double>::lowest();
-    std::cout << "Min val set to " << min_val << std::endl;
     double max_val = std::numeric_limits<double>::max();
-    std::cout << "Max val set to " << max_val << std::endl;
     setPropOption_(Option::MIN, min_val);
     setPropOption_(Option::MAX, max_val);
 }
@@ -97,6 +88,12 @@ bool PropertyNumeric::propValid(const std::any & val) {
     converted_val = static_cast<double>(any_cast<const size_t>(val));
   } else if (val.type() == typeid(const int)) {
     converted_val = static_cast<double>(any_cast<const int>(val));
+  } else if (val.type() == typeid(std::string)) {
+    std::stringstream ss;
+    ss << any_cast<std::string>(val);
+    double value;
+    ss >> value;
+    converted_val = value;
   } else {
     string err = "The value provided to the property is not a supported type.";
     throw invalid_argument(err);

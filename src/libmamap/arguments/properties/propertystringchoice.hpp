@@ -13,12 +13,13 @@ class PropertyStringChoice
 
    std::set<bool> getSetBoolEnforced_(Option option, std::map<Option, std::any> options_);
   ;
- public:
-   PropertyStringChoice(void);
 
-   virtual PropertyType getPropertyType(void) const noexcept final {
+   virtual PropertyType getPropertyType_(void) const noexcept final {
      return PropertyType::STRING_CHOICE;
    }
+
+ public:
+   PropertyStringChoice(void);
 
    virtual bool propValid(const std::any& string_choice) final;
     };

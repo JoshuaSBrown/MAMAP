@@ -2,6 +2,7 @@
 #ifndef _MAMAP_ARGUMENTOBJECT_HPP
 #define _MAMAP_ARGUMENTOBJECT_HPP
 
+#include "argumenttypes.hpp"
 #include "string_support.hpp"
 #include "properties/propertyobject.hpp"
 #include <exception>
@@ -12,13 +13,6 @@
 #include <string>
 
 namespace mamap {
-
-  enum class ArgumentType {
-    NUMERICAL,
-    FILES,
-    STRING,
-    SWITCH
-  };
 
 // The template is simply for specifying the type of the argument coming
 // from the command line
@@ -80,8 +74,14 @@ class ArgumentObject {
       PropertyType type = prop->getPropertyType();
       auto vec_opt = prop->getPropertyOptions();
       for (Option opt : vec_opt) {
-        auto value = prop->getPropOption<std::any>(opt);
-        opts_values[type][opt] = value;
+        try {
+          auto value = prop->getPropOption<std::any>(opt);
+          opts_values[type][opt] = value;
+        } catch (std::exception & e) {
+          std::string err = "Error in Argument: " + this->getArgumentType();
+          err += "\n" + std::string(e.what());
+          throw std::runtime_error(err);
+        }
       }
     }
     return opts_values;
@@ -110,7 +110,15 @@ class ArgumentObject {
         std::vector<Option> vec_opt = prop->getPropertyOptions();
         for (const Option & opt : vec_opt) {
           if (option == opt) {
-            return prop->getPropOption<T>(opt);
+            try {
+              return prop->getPropOption<T>(opt);
+            } catch (std::exception & e) {
+              std::string err = "Error in Argument: " + this->getArgumentType();
+              err += "\n Property: " + property;
+              err += "\n Option: " + opt;
+              err += "\n" + std::string(e.what());
+              throw std::runtime_error(err);
+            }
           }
         }
       }

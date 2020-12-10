@@ -10,6 +10,10 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Dir2/file.gjf
   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Dir2/file.gjf)
 
 list( APPEND UNIT_TEST_SOURCE_FILES
+  test_argumentfile
+  test_argumentnumerical
+  test_argumentparser
+  test_argumentstring
   test_propertyfileexist
   test_propertyfileext
   test_propertynumerical

@@ -12,13 +12,13 @@ class PropertySwitch : public PropertyObject {
   void switchValid(int val) const;
   void switchValid(std::string val) const;
 
- public:
-  PropertySwitch(void);
-  
-  virtual PropertyType getPropertyType(void) const noexcept final {
+  virtual PropertyType getPropertyType_(void) const noexcept final {
     return PropertyType::SWITCH; 
   }
 
+ public:
+  PropertySwitch(void);
+  
   virtual bool propValid(const std::any & value) final;
   bool propValid() const {return true;}
 };

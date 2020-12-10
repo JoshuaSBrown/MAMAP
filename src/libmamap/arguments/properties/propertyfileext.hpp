@@ -14,19 +14,15 @@ class PropertyFileExt
   void extSupported(const std::string &) const;
   std::vector<std::string> getOpts_(void) const;
 
- public:
-  explicit PropertyFileExt(void) {
-    std::set<std::string> exts_;
-    exts_.insert("*");
-    options_[Option::ALLOWED_VALUES] = exts_;
+  virtual PropertyType getPropertyType_(void) const noexcept final {
+    return PropertyType::FILE_EXT;
   }
+
+ public:
+  PropertyFileExt(void);
 
   explicit PropertyFileExt(std::string ext);
   PropertyFileExt(std::set<std::string> exts);
-
-  virtual PropertyType getPropertyType(void) const noexcept final {
-    return PropertyType::FILE_EXT;
-  }
 
   virtual bool propValid(const std::any &fileNamePath) final;
   void setPropOption(Option option, std::string var);

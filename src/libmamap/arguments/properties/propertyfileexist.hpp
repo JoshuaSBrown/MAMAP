@@ -11,15 +11,15 @@ class PropertyFileExist : public PropertyObject {
  private:
   bool fileExist(const std::string &) const;
 
+  virtual PropertyType getPropertyType_() const noexcept final {
+    return PropertyType::FILE_EXISTS;
+  }
+
  public:
   explicit PropertyFileExist(void);
   PropertyFileExist(bool fileMustExist);
 
   virtual bool propValid(const std::any &fileName) final;
-
-  virtual PropertyType getPropertyType() const noexcept final {
-    return PropertyType::FILE_EXISTS;
-  }
 
   void postCheck(void) const final;
 };

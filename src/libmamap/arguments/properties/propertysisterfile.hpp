@@ -14,13 +14,13 @@ class PropertySisterFile
   void extSupported(const std::string &) const;
   void checkExt(const std::string &) const;
 
+  virtual PropertyType getPropertyType_(void) const noexcept final {
+    return PropertyType::SISTER_FILE;
+  }
+
  public:
 
   PropertySisterFile(void);
-
-  virtual PropertyType getPropertyType(void) const noexcept final {
-    return PropertyType::SISTER_FILE;
-  }
 
   virtual bool propValid(const std::any &fileNamePath) final;
 

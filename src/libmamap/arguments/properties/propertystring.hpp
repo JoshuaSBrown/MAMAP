@@ -7,12 +7,14 @@
 namespace mamap {
 
 class PropertyString : public PropertyObject {
+
+  private: 
+    virtual PropertyType getPropertyType_(void) const noexcept final {
+      return PropertyType::STRING;
+    }
+
  public:
   PropertyString(void);
-
-  virtual PropertyType getPropertyType(void) const noexcept final {
-    return PropertyType::STRING;
-  }
 
   virtual bool propValid(const std::any& val) final;
 };

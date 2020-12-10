@@ -93,7 +93,7 @@ string cut_beg(string input, int n) { return input.substr(n, input.size()); }
 
 // Converts to uppercase
 std::string to_upper(std::string input) {
-  std::for_each(input.begin(),input.end(), ::toupper);
+  std::transform( input.begin(), input.end(), input.begin(), &::toupper );
   return input;
 }
 

@@ -17,7 +17,7 @@ using namespace std;
 namespace mamap {
 
   std::unique_ptr<ArgumentObject> createArgument(ArgumentType type) {
-    if (type == ArgumentType::NUMERICAL) {
+    if (type == ArgumentType::NUMERIC) {
       return std::unique_ptr<ArgumentObject>(new ArgumentNumerical);
     } else if (type == ArgumentType::STRING) {
       return std::unique_ptr<ArgumentObject>(new ArgumentString);
@@ -27,25 +27,6 @@ namespace mamap {
       return std::unique_ptr<ArgumentObject>(new ArgumentFile);
     }
     return std::unique_ptr<ArgumentObject>();
-  }
-
-  void ArgumentParser::addValue_(std::string flag, std::string value) {
-    std::type_index value_type = arg_[flag].at(0)->getValueType(); 
-    if (value_type == typeid(double) ){
-      values_[flag][value_type].emplace_back(stod(value));
-    } else if(value_type == typeid(int) ) {
-      values_[flag][value_type].emplace_back(stoi(value));
-    } else if(value_type == typeid(std::string) ) {
-      values_[flag][value_type].emplace_back(value);
-    } else if(value_type == typeid(bool) ){
-      if (to_upper(value) == "TRUE" || value == "1" || to_upper(value) == "ON") {
-        values_[flag][value_type].emplace_back(true);
-      } else if (to_upper(value) == "FALSE" || value == "1" || to_upper(value) == "OFF") {
-        values_[flag][value_type].emplace_back(false);
-      }
-    } else {
-      std::runtime_error("Unknown type for argument value");
-    }
   }
 
   ArgumentParser::ArgumentParser(set<vector<string>> flags) {
@@ -176,240 +157,9 @@ namespace mamap {
   }
 
   void ArgumentParser::addFlagArg(string flag, ArgumentType argname) {
-
     arg_[flag].push_back(createArgument(argname));
-  /*  if (argname == ArgumentType::NUMERICAL) {
-        auto ArInt = std::unique_ptr<ArgumentObject>(new ArgumentNumerical);
-        int_arg_[flag].push_back(std::move(ArInt));
-    } else if (argname == ArgumentType::SWITCH) {
-      if (switch_arg_.count(flag) == 0) {
-        auto ArSwitch = std::unique_ptr<ArgumentObject>(new ArgumentSwitch);
-        switch_arg_[flag].push_back(std::move(ArSwitch));
-      } else {
-        throw invalid_argument(
-            "switch argument has already been added for "
-            "flag " +
-            flag);
-      }
-    } else if (argname == ArgumentType::STRING) {
-        auto ArString = std::unique_ptr<ArgumentObject>(new ArgumentString);
-        str_arg_[flag].push_back(std::move(ArString));
-    } else if (argname == ArgumentType::FILES) {
-        auto ArFile = std::unique_ptr<ArgumentObject>(new ArgumentFile);
-        file_arg_[flag].push_back(std::move(ArFile));
-    } else {
-      throw invalid_argument(
-          "Unrecognized argument being added for flag"
-          " argname is " +
-          argname + " flag name is " + flag);
-    }*/
   }
-  /*
-  // Will apply values to all properties in the argument vector
-  void ArgumentParser::setFlagArgOpt(string flag, string argname, string property,
-                                     string option, int val) {
-
-    if (argname.compare("ARGUMENT_INT") == 0) {
-      if (int_arg_.count(flag) == 0) {
-        auto ArInt = std::unique_ptr<ArgumentInt>(new ArgumentInt);
-        ArInt->setArgPropertyOpt(property, option, val);
-        int_arg_[flag].push_back(std::move(ArInt));
-      } else {
-        for ( std::unique_ptr<ArgumentInt> & ptr : int_arg_[flag]){
-          ptr->setArgPropertyOpt(property, option, val);
-        }
-      }
-    } else if (argname.compare("ARGUMENT_STRING") == 0) {
-      if (str_arg_.count(flag) == 0) {
-        auto ArString = std::unique_ptr<ArgumentString>(new ArgumentString);
-        ArString->setArgPropertyOpt(property, option, val);
-        str_arg_[flag].push_back(std::move(ArString));
-      } else {
-        for ( std::unique_ptr<ArgumentString> & ptr : str_arg_[flag] ){
-          ptr->setArgPropertyOpt(property, option, val);
-        }
-      }
-    } else if (argname.compare("ARGUMENT_SWITCH") == 0) {
-      if (switch_arg_.count(flag) == 0) {
-        auto ArSwitch = std::unique_ptr<ArgumentSwitch>(new ArgumentSwitch);
-        if (val == 0) {
-          ArSwitch->setArgPropertyOpt(property, option, "OFF");
-        } else if (val == 1) {
-          ArSwitch->setArgPropertyOpt(property, option, "ON");
-        } else {
-          throw invalid_argument("Unrecognized option for switch " +
-                                 to_string(val));
-        }
-        switch_arg_[flag].push_back(std::move(ArSwitch));
-      } else { // For a switch there will only be one value in the vector
-        if (val == 0) {
-          switch_arg_[flag].at(0)->setArgPropertyOpt(property, option, "OFF");
-        } else if (val == 1) {
-          switch_arg_[flag].at(0)->setArgPropertyOpt(property, option, "ON");
-        } else {
-          throw invalid_argument("Unrecognized option for switch " +
-                                 to_string(val));
-        }
-      }
-    } else if (argname.compare("ARGUMENT_FILE") == 0) {
-      if (file_arg_.count(flag) == 0) {
-        auto ArFile = std::unique_ptr<ArgumentFile>(new ArgumentFile);
-
-        ArFile->setArgPropertyOpt(property, option, val);
-        file_arg_[flag].push_back(std::move(ArFile));
-      } else {
-        for ( std::unique_ptr<ArgumentFile> & ptr : file_arg_[flag] ){
-          ptr->setArgPropertyOpt(property, option, val);
-        }
-      }
-    } else {
-      throw invalid_argument("Unrecognized int arg");
-    }
-  }
-
-  void ArgumentParser::setFlagArgOpt(string flag, string argname, string property,
-                                     string option, double val) {
-
-    if (argname.compare("ARGUMENT_DOUBLE") == 0) {
-      if (double_arg_.count(flag) == 0) {
-        auto ArDouble = std::unique_ptr<ArgumentDouble>(new ArgumentDouble);
-        ArDouble->setArgPropertyOpt(property, option, val);
-        double_arg_[flag].push_back(std::move(ArDouble));
-      } else {
-        for ( std::unique_ptr<ArgumentDouble> & ptr : double_arg_[flag]) {
-          ptr->setArgPropertyOpt(property, option, val);
-        }
-      }
-    } else if (argname.compare("ARGUMENT_STRING") == 0) {
-      if (str_arg_.count(flag) == 0) {
-        auto ArString = std::unique_ptr<ArgumentString>(new ArgumentString);
-        ArString->setArgPropertyOpt(property, option, val);
-        str_arg_[flag].push_back(std::move(ArString));
-      } else {
-        for ( std::unique_ptr<ArgumentString> & ptr : str_arg_[flag]) {
-          ptr->setArgPropertyOpt(property, option, val);
-        }
-      }
-    } else {
-      throw invalid_argument("Unrecognized double arg");
-    }
-  }
-
-  void ArgumentParser::setFlagArgOpt(string flag, string argname, string property,
-                                     string option, string val) {
-
-    if (argname.compare("ARGUMENT_FILE") == 0) {
-      if (file_arg_.count(flag) == 0) {
-
-        if (property.compare("PROPERTY_FILE_EXT") == 0) {
-          set<string> temp{val};
-          auto ArFile = std::unique_ptr<ArgumentFile>(new ArgumentFile);
-          ArFile->setArgPropertyOpt(property, option, temp);
-          file_arg_[flag].push_back(std::move(ArFile));
-        } else if (property.compare("PROPERTY_SISTER_FILE_EXT") == 0) {
-          vector<string> temp{val};
-          auto ArFile = std::unique_ptr<ArgumentFile>(new ArgumentFile);
-          ArFile->setArgPropertyOpt(property, option, temp);
-          file_arg_[flag].push_back(std::move(ArFile));
-        } else {
-          auto ArFile = std::unique_ptr<ArgumentFile>(new ArgumentFile);
-          ArFile->setArgPropertyOpt(property, option, val);
-          file_arg_[flag].push_back(std::move(ArFile));
-        }
-      } else {
-        if (property.compare("PROPERTY_FILE_EXT") == 0) {
-          set<string> temp{val};
-          for ( std::unique_ptr<ArgumentFile> & ptr : file_arg_[flag]) {
-            ptr->setArgPropertyOpt(property, option, temp);
-          }
-        } else {
-          for ( std::unique_ptr<ArgumentFile> & ptr : file_arg_[flag]) {
-            ptr->setArgPropertyOpt(property, option, val);
-          }
-        }
-      }
-    } else if (argname.compare("ARGUMENT_SWITCH") == 0) {
-      if (switch_arg_.count(flag) == 0) {
-        auto ArSwitch = std::unique_ptr<ArgumentSwitch>(new ArgumentSwitch);
-        if (val.compare("OFF") != 0 && val.compare("ON") != 0) {
-          throw invalid_argument("Unrecognized option for switch " + val);
-        } else {
-          ArSwitch->setArgPropertyOpt(property, option, val);
-        }
-        switch_arg_[flag].push_back(std::move(ArSwitch));
-      } else {
-        if (val.compare("OFF") != 0 && val.compare("ON") != 0) {
-          throw invalid_argument("Unrecognized option for switch" + val);
-        } else {
-          for ( std::unique_ptr<ArgumentSwitch> & ptr : switch_arg_[flag]) {
-            ptr->setArgPropertyOpt(property, option, val);
-          }
-        }
-      }
-
-    } else if (argname.compare("ARGUMENT_STRING") == 0) {
-      if (str_arg_.count(flag) == 0) {
-        set<string> temp{val};
-        auto ArStr = std::unique_ptr<ArgumentString>(new ArgumentString);
-        ArStr->setArgPropertyOpt(property, option, temp);
-        str_arg_[flag].push_back(std::move(ArStr));
-      } else {
-        set<string> temp{val};
-        for ( std::unique_ptr<ArgumentString> & ptr : str_arg_[flag]) {
-          ptr->setArgPropertyOpt(property, option, temp);
-        }
-      }
-    } else {
-      throw invalid_argument("Unrecognized string arg " + argname);
-    }
-  }
-
-  void ArgumentParser::setFlagArgOpt(string flag, string argname, string property,
-                                     string option, set<string> vals) {
-
-    if (argname.compare("ARGUMENT_FILE") == 0) {
-      if (file_arg_.count(flag) == 0) {
-        auto ArFile = std::unique_ptr<ArgumentFile>(new ArgumentFile);
-        ArFile->setArgPropertyOpt(property, option, vals);
-        file_arg_[flag].push_back(std::move(ArFile));
-      } else {
-        for ( std::unique_ptr<ArgumentFile> & ptr : file_arg_[flag]) {
-          ptr->setArgPropertyOpt(property, option, vals);
-        }
-      }
-    } else if (argname.compare("ARGUMENT_STRING") == 0) {
-      if (str_arg_.count(flag) == 0) {
-        auto ArStr = std::unique_ptr<ArgumentString>(new ArgumentString);
-        ArStr->setArgPropertyOpt(property, option, vals);
-        str_arg_[flag].push_back(std::move(ArStr));
-      } else {
-        for ( std::unique_ptr<ArgumentString> & ptr : str_arg_[flag]) {
-          ptr->setArgPropertyOpt(property, option, vals);
-        }
-      }
-    } else {
-      throw invalid_argument("Unrecognized set<string> arg");
-    }
-  }
-
-  void ArgumentParser::setFlagArgOpt(string flag, string argname, string property,
-                                     string option, vector<string> vals) {
-
-    if (argname.compare("ARGUMENT_FILE") == 0) {
-      if (file_arg_.count(flag) == 0) {
-        auto ArFile = std::unique_ptr<ArgumentFile>(new ArgumentFile);
-        ArFile->setArgPropertyOpt(property, option, vals);
-        file_arg_[flag].push_back(std::move(ArFile));
-      } else {
-        for ( std::unique_ptr<ArgumentFile> & ptr : file_arg_[flag]) {
-          ptr->setArgPropertyOpt(property, option, vals);
-        }
-      }
-    } else {
-      throw invalid_argument("Unrecognized vector<string> arg");
-    }
-  }
-  */
+  
   bool ArgumentParser::nextParameterIsAFlag_(size_t index,
                                              vector<string> arguments) {
 
@@ -425,7 +175,7 @@ namespace mamap {
     return false;
   }
 
-  void ArgumentParser::parseArg_(size_t& index, vector<string> arguments) {
+  size_t ArgumentParser::parseArg_(size_t index, vector<string> arguments) {
     string flag = arguments.at(index);
     // If the abbreviated flag is passed we need to resolve the full flag name
     if (flags_.count(flag) == 0) {
@@ -447,15 +197,20 @@ namespace mamap {
       if ( type == ArgumentType::SWITCH && 
           (nextParameterIsAFlag_(index, arguments) ||
            (index + 1) >= arguments.size())){
-
+      
+        std::cout << "Type is a switch" << std::endl;
         unrecognized = false;
         if(defaults_set_[flag] == true ){
-          values_[flag][std::type_index(typeid(bool))].at(0) = true;
-          addValue_(flag, "TRUE");
+          //values_[flag][std::type_index(typeid(bool))].at(0) = true;
+          //addValue_(flag, "TRUE");
+
+          values_[flag].at(0) = "true";
         }else {
-          addValue_(flag, "TRUE");
+          //addValue_(flag, "TRUE");
+          values_[flag].emplace_back("true");
         }
       } else { 
+        std::cout << "Index is " << index << std::endl;
         if ((index + 1) >= arguments.size()) {
           string err = "" + flag + " Missing arguments";
           throw runtime_error(err);
@@ -463,6 +218,7 @@ namespace mamap {
         int arg_index = 0;
         do { // Allow reading of multiple arguments
           string argument = arguments.at(index + 1);
+          std::cout << "Parsing argument " << argument << std::endl;
           if ( arg_index != 0){
             // Need to duplicate the argument
             addFlagArg(flag, type);
@@ -479,241 +235,28 @@ namespace mamap {
           if (defaults_set_.count(flag) ) {
             if(defaults_set_[flag] == true ){
               values_[flag].clear();
-              addValue_(flag,argument);
+              //addValue_(flag,argument);
+              values_[flag].emplace_back(argument);
               defaults_set_[flag] = false;
             } else {
-              addValue_(flag,argument);
+              //addValue_(flag,argument);
+              values_[flag].emplace_back(argument);
             }
           }
           ++index;
           ++arg_index;
+          
           if( (index+1) >= arguments.size() ) break;
-        } while ( arguments.at(index+1).at(0) == '-' );
+        } while ( arguments.at(index+1).at(0) != '-' );
       }
     }
-  /*
-    // Parse Switches
-    if (switch_arg_.count(flag) != 0) {
-      if (!nextParameterIsAFlag_(index, arguments)) {
-        if ((index + 1) >= arguments.size()) {
-          if (switch_arg_[flag].at(0)->requiresParameter()) {
-            string err = "" + flag + " Missing arguments";
-            throw runtime_error(err);
-          } else {
-            unrecognized = false;
-            int_values_[flag].at(0) = 1;
-          }
-        } else {
-          string argument = arguments.at(index + 1);
-          switch_arg_[flag].at(0)->argValid(argument);
-          unrecognized = false;
-          string_values_[flag].at(0) = argument;
-          if (switch_arg_[flag].at(0)->positive(argument)) {
-            if (defaults_set_.count(flag) ) {
-              if(defaults_set_[flag] == true ){
-                int_values_[flag].at(0) = 1;
-                defaults_set_[flag] = false;
-              } else {
-                int_values_[flag].push_back(1);
-              }
-            }
-          } else {
-            if (defaults_set_.count(flag) ) {
-              if(defaults_set_[flag] == true ){
-                int_values_[flag].at(0) = 0;
-                defaults_set_[flag] = false;
-              } else {
-                int_values_[flag].push_back(0);
-              }
-            }
-          }
-        }
-      } else {
-        unrecognized = false;
-        if(defaults_set_[flag] == true ){
-          int_values_[flag].at(0) = 1;
-          defaults_set_[flag] = false;
-        }else {
-          int_values_[flag].push_back(1);
-        }
-      }
-    }
-
-    // Parse integer arguments
-    if (int_arg_.count(flag) != 0) {
-      if (!nextParameterIsAFlag_(index, arguments) ||
-          int_arg_[flag].at(0)->requiresParameter()) {
-        if ((index + 1) >= arguments.size()) {
-          string err = "" + flag + " Missing arguments";
-          throw runtime_error(err);
-        }
-
-        int arg_index = 0;
-        do {
-          string argument = arguments.at(index + 1);
-          if ( arg_index != 0){
-            // Need to duplicate the argument
-            std::string arg_name = int_arg_[flag].at(0)->getArgumentName();
-            std::vector<std::string> arg_props = int_arg_[flag].at(0)->getProperties();
-            std::vector<std::string> arg_prop_opts = int_arg_[flag].at(0)->getPropertyOptions();
-            std::map<std::string, std::string> arg_prop_vals = int_arg_[flag].at(0)->getPropertyValues();
-          }
-          int_arg_[flag].at(arg_index)->argValid(stoi(argument));
-          unrecognized = false;
-          if (defaults_set_.count(flag) ) {
-            if(defaults_set_[flag] == true ){
-              string_values_[flag].clear();
-              int_values_[flag].push_back(stoi(argument));
-              defaults_set_[flag] = false;
-            } else {
-              int_values_[flag].push_back(stoi(argument));
-            }
-          }
-          ++index;
-          ++arg_index;
-          if( (index+1) >= arguments.size() ) break;
-        } while ( arguments.at(index+1).at(0) == '-' );
-      }
-    }
-
-    // Parse double arguments
-    if (double_arg_.count(flag) != 0) {
-      if (!nextParameterIsAFlag_(index, arguments) ||
-          double_arg_[flag].at(0)->requiresParameter()) {
-        if ((index + 1) >= arguments.size()) {
-          string err = "" + flag + " Missing arguments";
-          throw runtime_error(err);
-        }
-        int arg_index = 0;
-        do {
-          string argument = arguments.at(index + 1);
-          if ( arg_index != 0){
-            // Need to duplicate the argument
-            std::string arg_name = double_arg_[flag].at(0)->getArgumentName();
-            std::vector<std::string> arg_props = double_arg_[flag].at(0)->getProperties();
-            std::vector<std::string> arg_prop_opts = double_arg_[flag].at(0)->getProperties();
-            std::map<std::string, std::string> arg_prop_vals = double_arg_[flag].at(0)->getPropertyValues();
-          }
-          double_arg_[flag].at(arg_index)->argValid(stod(argument));
-          unrecognized = false;
-          if (defaults_set_.count(flag) ) {
-            if(defaults_set_[flag] == true ){
-              string_values_[flag].clear();
-              double_values_[flag].push_back(stod(argument));
-              defaults_set_[flag] = false;
-            } else {
-              double_values_[flag].push_back(stod(argument));
-            }
-          }
-          ++index;
-          ++arg_index;
-          if( (index+1) >= arguments.size() ) break;
-        } while ( arguments.at(index+1).at(0) == '-' );
-      }
-    }
-
-    // Parse file arguments 
-    if (file_arg_.count(flag) != 0) {
-      if (!nextParameterIsAFlag_(index, arguments) ||
-          file_arg_[flag].at(0)->requiresParameter()) {
-        if ((index + 1) >= arguments.size()) {
-          string err = "" + flag + " Missing arguments";
-          throw runtime_error(err);
-        }
-        int arg_index = 0;
-        do {
-          string argument = arguments.at(index + 1);
-          if ( arg_index != 0){
-            // Need to duplicate the argument
-            std::string arg_name = file_arg_[flag].at(0)->getArgumentName();
-            std::vector<std::string> arg_props = file_arg_[flag].at(0)->getProperties();
-            std::vector<std::string> arg_prop_opts = file_arg_[flag].at(0)->getProperties();
-            std::map<std::string, std::string> arg_prop_vals = file_arg_[flag].at(0)->getPropertyValues();
-          }
-          file_arg_[flag].at(arg_index)->argValid(argument);
-          unrecognized = false;
-          if (defaults_set_.count(flag) ) {
-            if(defaults_set_[flag] == true ){
-              string_values_[flag].clear();
-              string_values_[flag].push_back(argument);
-              defaults_set_[flag] = false;
-            } else {
-              string_values_[flag].push_back(argument);
-            }
-          }
-          ++index;
-          ++arg_index;
-          if( (index+1) >= arguments.size() ) break;
-        } while ( arguments.at(index+1).at(0) == '-' );
-      }
-    }*/
 
     if (unrecognized) {
       throw invalid_argument("The flag " + flag + " was unrecognized");
     }
+    return index;
   }
 
-
-  /*
-  std::vector<int> ArgumentParser::getInts(string flag) {
-
-    if (int_values_.count(flag) == 0) {
-      if (switch_arg_.count(flag)) {
-        if (string_values_.count(flag)) {
-          if (switch_arg_[flag]->positive(string_values_[flag])) {
-            return std::vector<int> {1};
-          } else {
-            return std::vector<int> {0};
-          }
-        }
-      }
-      string err = "" + flag +
-                   " does not contain an int. It is also possible that "
-                   "you did not specify a default value";
-      throw invalid_argument(err);
-    }
-    return int_values_[flag];
-  }
-
-  std::vector<double> ArgumentParser::getDoubles(string flag) {
-    if (double_values_.count(flag) == 0) {
-      string err = "" + flag +
-                   " does not contain a double. It is also possible that "
-                   "you did not specify a default value";
-      throw invalid_argument(err);
-    }
-    return double_values_[flag];
-  }
-
-  std::vector<string> ArgumentParser::getStrs(string flag) {
-    if (string_values_.count(flag) == 0) {
-      if (switch_arg_.count(flag)) {
-        if (int_values_.count(flag)) {
-          if (switch_arg_[flag]->positive(int_values_[flag])) {
-            return std::vector<string> {"ON"};
-          } else {
-            return std::vector<string> {"OFF"};
-          }
-        }
-      }
-      string err = "" + flag +
-                   " does not contain a string. It is also possible that "
-                   "you did not specify a default value";
-      throw invalid_argument(err);
-    }
-    return string_values_[flag];
-  }
-
-  std::vector<size_t> ArgumentParser::getSize_ts(string flag) {
-    if (size_t_values_.count(flag) == 0) {
-      string err = "" + flag +
-                   " does not contain a size_t. It is also possible that "
-                   "you did not specify a default value";
-      throw invalid_argument(err);
-    }
-    return size_t_values_[flag];
-  }
-  */
   void ArgumentParser::postParseCheck(void) {
     //for (std::pair<std::string, std::vector<std::unique_ptr<ArgumentObject>>> & flag_arg : arg_) {
     for (auto & flag_arg : arg_) {
@@ -726,7 +269,12 @@ namespace mamap {
   void ArgumentParser::parse(const char* argv[], int argc) {
 
     // Convert to vector of strings
-    vector<string> arguments(argv, argv + argc);
+    vector<string> arguments(argv , argv + argc);
+
+    std::cout << "All arguments" << std::endl;
+    for (std::string & str : arguments ) {
+      std::cout << str << std::endl;
+    }
 
     if (argc <= 1) {
       cout << "Usage: " << arguments.at(0) << " <options(s)> SOURCES";
@@ -739,10 +287,14 @@ namespace mamap {
     string citation_flag = "--citation";
     string citation_flag_short = "-cite";
     string version_flag = "--version";
-    string version_flag_short = "-version";
+    string version_flag_short = "-v";
 
     size_t allowed_args_before_exit = 2;
-    for (size_t index = 1; index < arguments.size(); ++index) {
+    size_t index = 1;
+    for (; index < arguments.size(); ++index) {
+      std::cout << "Arg loop index " << index << " size " << arguments.size() << " argument is " << arguments.at(index) << std::endl;
+      std::cout << "Arg 0 val " << arguments.at(0) << std::endl;
+      std::cout << "Arg size -1 val " << arguments.back() << std::endl;
       if (help_flag.compare(arguments.at(index)) == 0 ||
           help_flag_short.compare(arguments.at(index)) == 0) {
         cout << "Usage: " << arguments.at(0) << " <options(s)> SOURCES";
@@ -768,10 +320,11 @@ namespace mamap {
         }
         ++allowed_args_before_exit;
       } else {
-        parseArg_(index, arguments);
+        std::cout << "Index before " << index << " size " << arguments.size() << " argument " << arguments.at(index) << std::endl;
+        index = parseArg_(index, arguments);
+        std::cout << "Index after " << index << " size " << arguments.size() << " argument " << arguments.at(index) << std::endl;
       }
     }
-
     postParseCheck();
   }
 }

@@ -2,6 +2,9 @@
 #ifndef _MAMAP_PROPERTY_OBJECT_HPP
 #define _MAMAP_PROPERTY_OBJECT_HPP
 
+#include "propertyoptions.hpp"
+#include "propertytypes.hpp"
+
 #include <any>
 #include <iostream>
 #include <map>
@@ -17,75 +20,40 @@
 
 namespace mamap {
 
-enum class PropertyType {
-  UNKNOWN,
-  NUMERIC,
-  FILE_EXISTS,
-  FILE_EXT,
-  SISTER_FILE,
-  STRING,
-  STRING_CHOICE,
-  SWITCH
-};
-
-enum class Option {
-  NO_OPTIONS,
-  MIN,
-  MAX,
-  MIN_LENGTH,
-  MAX_LENGTH,
-  MUST_EXIST,
-  DOES_EXIST,
-  ALLOWED_VALUES,
-  ENFORCED,
-  FILE_NAME,
-  FILE_PATH,
-  FILE_PATH_NAME,
-  VALUE,
-  DEFAULT
-};
-
-std::ostream& operator<<(std::ostream& out, const Option option);
-
-std::string operator+(std::string str, const Option option);
+std::any all_convert_(Option option,std::map<Option, std::any> options);
 
 class PropertyObject {
  protected:
-  // Map key is the option name and the type "int, double etc"
-  // void * points to the correct value for that type
   std::map<Option, std::any> options_;
   std::map<Option, std::vector<std::type_index>> allowed_option_types_;
   std::map<Option, std::type_index> default_option_type_; 
 
-  //void addAllowedOptionType_(const Option & option, std::type_index ind) {  
-   // allowed_option_types_[option].push_back(std::move(ind));
-  //}
-
- // void setDefaultOptionType_(const Option & option, std::type_index ind) {
-  //  default_option_type_[option] = std::move(ind);
- // }
+  virtual PropertyType getPropertyType_(void) const noexcept = 0;
 
   bool propOptionValid_(const Option &option) const {
     return options_.count(option);
   }
 
   void setPropOption_(const Option &option, const std::any &val) {
-      std::cout << "Converting to default" << std::endl;
       std::any as_default = convert_to_default_(option, val);
-      std::cout << "assigning value" << std::endl;
       options_[option] = as_default;
   }
 
   bool conversionAllowed_(Option option, std::type_index type) const {
+    if( type == typeid(std::any) ) return true;
+    if( allowed_option_types_.count(option) == 0) {
+      throw std::runtime_error("No allowed option types have been specefied for Option: " + option); 
+    } 
     for ( const std::type_index & allowed_type : allowed_option_types_.at(option) ){
-      std::cout << "Allowed type " << allowed_type.name() <<std::endl;
       if( allowed_type == type ) return true;
     }
-    std::cout << "Actual type " << type.name() << std::endl;
     return false;
   } 
 
   // Convert from the default to the type
+  typedef std::any (*any_func)(Option,std::map<Option, std::any>); 
+  std::map<Option,any_func> any_convert_ = {{Option::DEFAULT, &all_convert_}};
+
   typedef int (*int_func)(Option,std::map<Option, std::any>); 
   std::map<Option,int_func> int_convert_;
   typedef size_t (*size_t_func)(Option,std::map<Option, std::any>); 
@@ -135,7 +103,6 @@ class PropertyObject {
   std::any convert_to_default_(const Option option, const std::any & val) {
       std::string error_msg = "Missing conversion to default function for option ";
       if (val.type() == typeid(int) || val.type() == typeid(const int)) {
-        std::cout << "int" << std::endl;
         if( int_convert_to_default_.count(option) ) { 
           return int_convert_to_default_[option](option,options_, val);
         } else {
@@ -143,7 +110,6 @@ class PropertyObject {
               ", converting from type int.");
         }
       } else if (val.type() == typeid(size_t) || val.type() == typeid(const size_t)) { 
-        std::cout << "size_t" << std::endl;
         if( size_t_convert_to_default_.count(option) ) { 
           return size_t_convert_to_default_[option](option,options_, val);
         } else {
@@ -151,23 +117,19 @@ class PropertyObject {
               ", converting from type size_t.");
         }
       } else if (val.type() == typeid(double) || val.type() == typeid(const double)) { 
-        std::cout << "double" << std::endl;
         if ( double_convert_to_default_.count(option) ) {
           return double_convert_to_default_[option](option,options_, val);
         }else {
           throw std::runtime_error(error_msg + option + ", converting from type double.");
         }
       } else if (val.type() == typeid(std::string) || val.type() == typeid(const char *) || val.type() == typeid(char *) ) { 
-        std::cout << "string" << std::endl;
         if ( str_convert_to_default_.count(option) ) {
-          std::cout << "Converting string to default " << std::endl;
           return str_convert_to_default_[option](option,options_, val);
         }else {
           throw std::runtime_error(error_msg + option + 
               ", converting from  type string.");
         }
       } else if (val.type() == typeid(bool)) { 
-        std::cout << "bool" << std::endl;
         if ( bool_convert_to_default_.count(option) ) {
           return bool_convert_to_default_[option](option,options_, val);
         }else {
@@ -175,7 +137,6 @@ class PropertyObject {
               ", converting from  type bool.");
         }
       } else if (val.type() == typeid(std::set<std::string>)) { 
-        std::cout << "set string" << std::endl;
         if ( set_str_convert_to_default_.count(option) ) {
           return set_str_convert_to_default_[option](option,options_, val);
         }else {
@@ -183,7 +144,6 @@ class PropertyObject {
               ", converting from  type set<string>.");
         }
       } else if (val.type() == typeid(std::set<bool>)) { 
-        std::cout << "set bool" << std::endl;
         if ( set_bool_convert_to_default_.count(option) ) {
           return set_bool_convert_to_default_[option](option,options_, val);
         }else {
@@ -191,7 +151,6 @@ class PropertyObject {
               ", converting from  type set<bool>.");
         }
       } else if (val.type() == typeid(std::set<int>)) { 
-        std::cout << "set int" << std::endl;
         if ( set_int_convert_to_default_.count(option) ) {
           return set_int_convert_to_default_[option](option,options_, val);
         }else {
@@ -199,7 +158,6 @@ class PropertyObject {
               ", converting from  type set<int>.");
         }
       } else if (val.type() == typeid(std::vector<int>)) { 
-        std::cout << "vector int" << std::endl;
         if ( vector_int_convert_to_default_.count(option) ) {
           return vector_int_convert_to_default_[option](option,options_, val);
         }else {
@@ -207,7 +165,6 @@ class PropertyObject {
               ", converting from  type vector<int>.");
         }
       } else if (val.type() == typeid(std::vector<std::string>)) { 
-        std::cout << "vector str" << std::endl;
         if ( vector_str_convert_to_default_.count(option) ) {
           return vector_str_convert_to_default_[option](option,options_, val);
         }else {
@@ -215,7 +172,6 @@ class PropertyObject {
               ", converting from  type vector<string>.");
         }
       } else if (val.type() == typeid(std::vector<bool>)) { 
-        std::cout << "vector bool" << std::endl;
         if ( vector_bool_convert_to_default_.count(option) ) {
           return vector_bool_convert_to_default_[option](option,options_, val);
         }else {
@@ -234,6 +190,7 @@ class PropertyObject {
         double,
         std::string,
         bool,
+        std::any,
         std::set<std::string>,
         std::set<bool>, 
         std::set<int>, 
@@ -241,78 +198,75 @@ class PropertyObject {
         std::vector<bool>,
         std::vector<int>> val;
 
-      if (typeid(T) == typeid(int)) {
-        std::cout << "Converting to int" << std::endl;
+      if (typeid(T) == typeid(std::any) ) {
+        try {
+          return std::get<T>(val = any_convert_.at(Option::DEFAULT)(option,options_)); 
+        } catch(const std::exception & e) {
+          std::string err = "Error accessing option in Property: " + this->getPropertyType(); 
+          err += "\n" + std::string(e.what());
+          throw std::runtime_error(err);
+        }
+      }else if (typeid(T) == typeid(int)) {
         if( int_convert_.count(option) ) { 
           return std::get<T>(val = int_convert_.at(option)(option,options_));
         } else {
           throw std::runtime_error("Missing conversion function for type int.");
         }
       } else if (typeid(T) == typeid(size_t)) { 
-        std::cout << "Converting to size_t" << std::endl;
         if( size_t_convert_.count(option) ) { 
           return std::get<T>(val = size_t_convert_.at(option)(option,options_));
         } else {
           throw std::runtime_error("Missing conversion function for type size_t.");
         }
       } else if (typeid(T) == typeid(double)) { 
-        std::cout << "Converting to double" << std::endl;
         if ( double_convert_.count(option) ) {
           return std::get<T>(val = double_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type double.");
         }
       } else if (typeid(T) == typeid(std::string)) { 
-        std::cout << "Converting to string" << std::endl;
         if ( str_convert_.count(option) ) {
           return std::get<T>(val = str_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type string.");
         }
       } else if (typeid(T) == typeid(bool)) { 
-        std::cout << "Converting to bool" << std::endl;
         if ( bool_convert_.count(option) ) {
           return std::get<T>(val = bool_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type bool.");
         }
       } else if (typeid(T) == typeid(std::set<std::string>)) { 
-        std::cout << "Converting to set string" << std::endl;
         if ( set_str_convert_.count(option) ) {
           return std::get<T>(val = set_str_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type set<string>.");
         }
       } else if (typeid(T) == typeid(std::set<bool>)) { 
-        std::cout << "Converting to set bool" << std::endl;
         if ( set_bool_convert_.count(option) ) {
           return std::get<T>(val = set_bool_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type set<bool>.");
         }
       } else if (typeid(T) == typeid(std::set<int>)) { 
-        std::cout << "Converting to set int" << std::endl;
         if ( set_int_convert_.count(option) ) {
           return std::get<T>(val = set_int_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type set<int>.");
         }
       } else if (typeid(T) == typeid(std::vector<int>)) { 
-        std::cout << "Converting to vector int" << std::endl;
         if ( vector_int_convert_.count(option) ) {
           return std::get<T>(val = vector_int_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type vector<int>.");
         }
       } else if (typeid(T) == typeid(std::vector<std::string>)) { 
-        std::cout << "Converting to vector<string>" << std::endl;
         if ( vector_str_convert_.count(option) ) {
           return std::get<T>(val = vector_str_convert_.at(option)(option,options_));
         }else {
           throw std::runtime_error("Missing conversion function for type vector<string>.");
         }
       } else if (typeid(T) == typeid(std::vector<bool>)) { 
-        std::cout << "Converting to vector<bool>" << std::endl;
         if ( vector_bool_convert_.count(option) ) {
           return std::get<T>(val = vector_bool_convert_.at(option)(option,options_));
         }else {
@@ -327,7 +281,10 @@ class PropertyObject {
 
   virtual bool propValid(const std::any &value) = 0;
 
-  virtual PropertyType getPropertyType(void) const noexcept = 0;
+  PropertyType getPropertyType(void) const noexcept {
+    return getPropertyType_();     
+  };
+
 
   std::vector<Option> getPropertyOptions(void) const {
     std::vector<Option> options;
@@ -358,7 +315,6 @@ class PropertyObject {
       err << "Conversion of property option's value to type not allowed. Option: " + option;
       throw std::invalid_argument(err.str());
     }
- 
     return convert_<T>(option);
   }
 

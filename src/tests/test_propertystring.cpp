@@ -3,7 +3,6 @@
 #include <catch2/catch.hpp>
 
 #include "arguments/properties/propertystring.hpp"
-#include <cassert>
 #include <exception>
 #include <iostream>
 #include <string>

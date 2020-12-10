@@ -6,13 +6,13 @@
 #include <string>
 
 namespace mamap {
-const int map_VERSION_MAJOR = ;
-const int map_VERSION_MINOR = ;
-const int map_YEAR_PUBLISHED = ;
-const std::string map_AUTHOR_SURNAME = ;
-const std::string map_AUTHOR_INITIALS = ;
-const std::string map_TITLE = ;
-const std::string map_URL = ;
+const int mamap_VERSION_MAJOR = 1;
+const int mamap_VERSION_MINOR = 0;
+const int mamap_YEAR_PUBLISHED = 2020;
+const std::string mamap_AUTHOR_SURNAME = "Brown";
+const std::string mamap_AUTHOR_INITIALS = "J. S.";
+const std::string mamap_TITLE = "MAMAP";
+const std::string mamap_URL = "https://github.com/JoshuaSBrown/MAMAP";
 }  // namespace mamap
 
 #endif  // MAP_CONFIG_HPP

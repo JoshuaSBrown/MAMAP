@@ -14,12 +14,12 @@ class PropertyNumeric : public PropertyObject {
   // Override the setting make sure that a double is passed in as the numeric type
   //virtual void setPropOption_(const Option & option, const std::any & val) final;
 
- public:
-  PropertyNumeric(void);
-
-  virtual PropertyType getPropertyType(void) const noexcept final {
+  virtual PropertyType getPropertyType_(void) const noexcept final {
     return PropertyType::NUMERIC;
   }
+
+ public:
+  PropertyNumeric(void);
 
   virtual bool propValid(const std::any& value) final;
 };

@@ -33,6 +33,7 @@ namespace mamap {
     }
   }
 
+  PropertyFileExt::PropertyFileExt() : PropertyFileExt(string("*")) {};
 
   PropertyFileExt::PropertyFileExt(string ext) : PropertyFileExt(set<string>{ext}) {
   }
@@ -42,6 +43,7 @@ namespace mamap {
     default_option_type_.insert(std::pair<Option, type_index>(Option::ALLOWED_VALUES, type_index(typeid(set<string>))));
 
     allowed_option_types_[Option::ALLOWED_VALUES].push_back(type_index(typeid(string)));
+    allowed_option_types_[Option::ALLOWED_VALUES].push_back(type_index(typeid(const char *)));
     allowed_option_types_[Option::ALLOWED_VALUES].push_back(type_index(typeid(set<string>)));
 
     str_convert_[Option::ALLOWED_VALUES] = &mamap::getStrValues_;

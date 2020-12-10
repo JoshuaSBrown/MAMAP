@@ -1,6 +1,5 @@
 #ifndef _MAMAP_ARGUMENTPARSER_HPP
 #define _MAMAP_ARGUMENTPARSER_HPP
-#include "parameters.hpp"
 #include <any>
 #include <map>
 #include <memory>
@@ -30,10 +29,12 @@ class ArgumentParser {
   std::map<std::string, std::pair<std::string, std::string>> flags_;
 
   std::map<std::string, bool> defaults_set_;
-  // Arguments that are stored when argc and argv are parsed
-  std::map<std::string, std::map<std::type_index, std::vector<std::any>>> values_;
 
-  void parseArg_(size_t& index, std::vector<std::string> arguments);
+  // Arguments that are stored when argc and argv are parsed
+  // by default will be stored as a string
+  std::map<std::string,  std::vector<std::string>> values_;
+
+  size_t parseArg_(size_t index, std::vector<std::string> arguments);
 
   // Determine if the next value in arguments vector is a recognized flag
   bool nextParameterIsAFlag_(size_t index, std::vector<std::string> arguments);
@@ -42,10 +43,6 @@ class ArgumentParser {
   size_t maxFullFlagSize;
   size_t maxDescriptionSize;
   size_t maxLineLength = 80;
-
-  // Will convert the command line argument to the appropriate type before
-  // placing in std::any and adding to the values container
-  void addValue_(std::string flag, std::string value);
 
  public:
   // 1 - short flag
@@ -56,12 +53,20 @@ class ArgumentParser {
   // Set Defaults for the flags in the case that they are not found
   template<class T>
   void setFlagDefaultValue(std::string flag,const T & val) {
-    values_[flag][std::type_index(val)].push_back(val);
+    std::string value;
+    if(typeid(val) == typeid(std::string)){
+      value = val;
+    } else {
+      value = std::to_string(val);
+    }
+
+    values_[flag].push_back(value);
     defaults_set_[flag] = true;
   }
 
   // Add a argument without setting any of the values
   void addFlagArg(std::string flag, ArgumentType argname);
+
   // Set the rules for the flag and the type it is associated with types
   // include:
   // "FILES"
@@ -87,111 +92,68 @@ class ArgumentParser {
           ptr->setArgPropertyOpt(property, option, val);
         }
       }
-/*
-      if (argname == ArgumentType::NUMERICAL) {
-        if (arg_.count(flag) == 0) {
-          auto ArInt = std::unique_ptr<ArgumentObject>(new ArgumentNumerical);
-          ArInt->setArgPropertyOpt(property, option, val);
-          arg_[flag].push_back(std::move(ArInt));
-        } else {
-          for ( std::unique_ptr<ArgumentObject> & ptr : arg_[flag]){
-            ptr->setArgPropertyOpt(property, option, val);
-          }
-        }
-      } else if (argname == ArgumentType::STRING) {
-        if (arg_.count(flag) == 0) {
-          auto ArString = std::unique_ptr<ArgumentObject>(new ArgumentString);
-          ArString->setArgPropertyOpt(property, option, val);
-          arg_[flag].push_back(std::move(ArString));
-        } else {
-          for ( std::unique_ptr<ArgumentObject> & ptr : arg_[flag] ){
-            ptr->setArgPropertyOpt(property, option, val);
-          }
-        }
-      } else if (argname == ArgumentType::SWITCH) {
-        if (switch_arg_.count(flag) == 0) {
-          auto ArSwitch = std::unique_ptr<ArgumentObject>(new ArgumentSwitch);
-          if (val == 0) {
-            ArSwitch->setArgPropertyOpt(property, option, "OFF");
-          } else if (val == 1) {
-            ArSwitch->setArgPropertyOpt(property, option, "ON");
-          } else {
-            throw invalid_argument("Unrecognized option for switch " +
-                to_string(val));
-          }
-          arg_[flag].push_back(std::move(ArSwitch));
-        } else { // For a switch there will only be one value in the vector
-          if (val == 0) {
-            arg_[flag].at(0)->setArgPropertyOpt(property, option, "OFF");
-          } else if (val == 1) {
-            arg_[flag].at(0)->setArgPropertyOpt(property, option, "ON");
-          } else {
-            throw invalid_argument("Unrecognized option for switch " +
-                to_string(val));
-          }
-        }
-      } else if (argname == ArgumentType::FILES) {
-        if (file_arg_.count(flag) == 0) {
-          auto ArFile = std::unique_ptr<ArgumentObject>(new ArgumentFile);
 
-          ArFile->setArgPropertyOpt(property, option, val);
-          arg_[flag].push_back(std::move(ArFile));
-        } else {
-          for ( std::unique_ptr<ArgumentObject> & ptr : arg_[flag] ){
-            ptr->setArgPropertyOpt(property, option, val);
-          }
-        }
-      } else {
-        throw invalid_argument("Unrecognized int arg");
-      }*/
     }
 
+  template<class T>
+  T getFlagArgOptValue(
+      std::string flag,
+      int index,
+      ArgumentType type,
+      PropertyType property,
+      Option option) {
 
-/*  void setFlagArgOpt(std::string flag, std::string argname,
-                     std::string property, std::string option, double val);
+    if(arg_.count(flag) == 0) {
+      throw std::runtime_error("Flag is unknown");
+    }
+    if(index>arg_[flag].size()) {
+      throw std::runtime_error("Index is larger than the number of flags");
+    }
+    return arg_[flag].at(index)->getPropertyValues<T>(property,option);
+  }
 
-  void setFlagArgOpt(std::string flag, std::string argname,
-                     std::string property, std::string option, std::string val);
-
-  void setFlagArgOpt(std::string flag, std::string argname,
-                     std::string property, std::string option,
-                     std::set<std::string> vals);
-
-  void setFlagArgOpt(std::string flag, std::string argname,
-                     std::string property, std::string option,
-                     std::vector<std::string> vals);
-
-  std::string getFlagArgOptValue(std::string flag, std::string argname,
-                                 std::string property, std::string option);
-*/
   template<class T>
   std::vector<T> get(std::string flag) {
     std::vector<T> values;
-    if ( values_[flag].count(typeid(T)) ){
-      for ( std::any & val : values_[flag][typeid(T)] ){
-        values.push_back(std::any_cast<T>(val));
+    ArgumentType type = arg_[flag].front()->getArgumentType(); 
+    if(type == ArgumentType::SWITCH){
+      for ( std::string & val : values_[flag] ){
+        if (std::is_arithmetic_v<T>) {
+          if(val=="true") {
+            std::variant<std::string,int,double,long,size_t,float,bool> var = 1;
+            values.push_back(std::get<T>(var));
+          } else {
+            std::variant<std::string,int,double,long,size_t,float,bool> var = 0;
+            values.push_back(std::get<T>(var));
+          } 
+        } else {
+          std::variant<std::string,int,double,long,size_t,float,bool> var = val;
+          values.push_back(std::get<T>(var));
+        }
+      }
+    }else {
+      for ( std::string & val : values_[flag] ){
+        std::cout << "Convering value " << val << std::endl;
+        if( std::is_unsigned<T>::value ) {
+          std::cout << "Converting to unsigned type" << std::endl;
+          if(val.size() > 0) {
+            std::cout << "Checking first char " << val[0] << std::endl;
+            if(val[0] == '-'){
+              throw std::runtime_error("You are attempting to convert a signed value to an unsigned value " + val);
+            }
+          }  
+        }
+        std::stringstream ss;
+        ss << val;
+        T value;
+        ss >> value;
+        values.push_back(value);
       }
     }
     return values;
   }
-//
-//  template<class T>
-//  std::vector<T> get(std::string flag, ArgumentType arg_type, PropertyType prop_type, Option opt) {
-//    std::vector<T> values;
-//    if ( values_[flag].count(typeid(T)) ){
-//      for ( std::any & val : values_[flag][typeid(T)] ){
-//        values.push_back(std::any_cast<T>(val));
-//      }
-//    }
-//    return values;
-//  }
-/*  std::vector<double> getDoubles(std::string flag);
-  std::vector<int> getInts(std::string flag);
-  std::vector<std::string> getStrs(std::string flag);
-  std::vector<size_t> getSize_ts(std::string flag);*/
 
   void postParseCheck(void);
-
   void parse(const char* argv[], int argc);
   void showUsage();
 };
