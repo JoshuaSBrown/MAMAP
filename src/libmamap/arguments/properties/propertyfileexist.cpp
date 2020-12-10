@@ -26,7 +26,7 @@ namespace mamap {
       return 0;
     }
 
-    std::any convertStrToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
+    std::any convertStrToDefault_(std::any val){
       std::string value;
       if ( val.type() == typeid(std::string) ) {
         value = std::any_cast<std::string>(val);
@@ -41,11 +41,10 @@ namespace mamap {
         throw std::runtime_error("Cannot convert string to bool time.");
       }
     }
-    std::any convertBoolToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
+    std::any convertBoolToDefault_(std::any val){
       return val;
     }
-    std::any convertIntToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
-
+    std::any convertIntToDefault_(std::any val){
       int value = std::any_cast<int>(val);
       if ( value == 0 ) return false;
       return true;

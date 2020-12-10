@@ -25,10 +25,10 @@ namespace mamap {
       return any_cast<set<string>>(options_.at(option));
     }
 
-    std::any convertStrToDefault_(Option option, std::map<Option, std::any> options, std::any val) {
+    std::any convertStrToDefault_(std::any val) {
       return set<string>{any_cast<string>(val)};
     }
-    std::any convertSetStrToDefault_(Option option, std::map<Option, std::any> options, std::any val) {
+    std::any convertSetStrToDefault_(std::any val) {
       return val;
     }
   }

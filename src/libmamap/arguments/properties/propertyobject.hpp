@@ -77,103 +77,103 @@ class PropertyObject {
   typedef std::vector<int> (*vector_int_func)(Option,std::map<Option, std::any>); 
   std::map<Option,vector_int_func> vector_int_convert_;
   // Convert from the supported types to the default to store it
-  typedef std::any (*int_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  typedef std::any (*int_func_to_default)(std::any); 
   std::map<Option,int_func_to_default> int_convert_to_default_;
-  typedef std::any (*size_t_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  typedef std::any (*size_t_func_to_default)(std::any); 
   std::map<Option,size_t_func_to_default> size_t_convert_to_default_;
-  typedef std::any (*double_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  typedef std::any (*double_func_to_default)(std::any); 
   std::map<Option,double_func_to_default> double_convert_to_default_;
-  typedef std::any (*str_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  typedef std::any (*str_func_to_default)(std::any); 
   std::map<Option,str_func_to_default> str_convert_to_default_;
-  typedef std::any (*bool_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  typedef std::any (*bool_func_to_default)(std::any); 
   std::map<Option,bool_func_to_default> bool_convert_to_default_;
-  typedef std::any (*set_bool_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  typedef std::any (*set_bool_func_to_default)(std::any); 
   std::map<Option,set_bool_func_to_default> set_bool_convert_to_default_;
-  typedef std::any (*set_str_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  typedef std::any (*set_str_func_to_default)(std::any); 
   std::map<Option,set_str_func_to_default> set_str_convert_to_default_;
-  typedef std::any (*set_int_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  typedef std::any (*set_int_func_to_default)(std::any); 
   std::map<Option,set_int_func_to_default> set_int_convert_to_default_;
-  typedef std::any (*vector_bool_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  typedef std::any (*vector_bool_func_to_default)(std::any); 
   std::map<Option,vector_bool_func_to_default> vector_bool_convert_to_default_;
-  typedef std::any (*vector_str_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  typedef std::any (*vector_str_func_to_default)(std::any); 
   std::map<Option,vector_str_func_to_default> vector_str_convert_to_default_;
-  typedef std::any (*vector_int_func_to_default)(Option,std::map<Option, std::any>, std::any); 
+  typedef std::any (*vector_int_func_to_default)(std::any); 
   std::map<Option,vector_int_func_to_default> vector_int_convert_to_default_;
 
   std::any convert_to_default_(const Option option, const std::any & val) {
       std::string error_msg = "Missing conversion to default function for option ";
       if (val.type() == typeid(int) || val.type() == typeid(const int)) {
         if( int_convert_to_default_.count(option) ) { 
-          return int_convert_to_default_[option](option,options_, val);
+          return int_convert_to_default_[option](val);
         } else {
           throw std::runtime_error(error_msg + option + 
               ", converting from type int.");
         }
       } else if (val.type() == typeid(size_t) || val.type() == typeid(const size_t)) { 
         if( size_t_convert_to_default_.count(option) ) { 
-          return size_t_convert_to_default_[option](option,options_, val);
+          return size_t_convert_to_default_[option](val);
         } else {
           throw std::runtime_error(error_msg + option + 
               ", converting from type size_t.");
         }
       } else if (val.type() == typeid(double) || val.type() == typeid(const double)) { 
         if ( double_convert_to_default_.count(option) ) {
-          return double_convert_to_default_[option](option,options_, val);
+          return double_convert_to_default_[option](val);
         }else {
           throw std::runtime_error(error_msg + option + ", converting from type double.");
         }
       } else if (val.type() == typeid(std::string) || val.type() == typeid(const char *) || val.type() == typeid(char *) ) { 
         if ( str_convert_to_default_.count(option) ) {
-          return str_convert_to_default_[option](option,options_, val);
+          return str_convert_to_default_[option](val);
         }else {
           throw std::runtime_error(error_msg + option + 
               ", converting from  type string.");
         }
       } else if (val.type() == typeid(bool)) { 
         if ( bool_convert_to_default_.count(option) ) {
-          return bool_convert_to_default_[option](option,options_, val);
+          return bool_convert_to_default_[option](val);
         }else {
           throw std::runtime_error(error_msg + option + 
               ", converting from  type bool.");
         }
       } else if (val.type() == typeid(std::set<std::string>)) { 
         if ( set_str_convert_to_default_.count(option) ) {
-          return set_str_convert_to_default_[option](option,options_, val);
+          return set_str_convert_to_default_[option](val);
         }else {
           throw std::runtime_error(error_msg + option + 
               ", converting from  type set<string>.");
         }
       } else if (val.type() == typeid(std::set<bool>)) { 
         if ( set_bool_convert_to_default_.count(option) ) {
-          return set_bool_convert_to_default_[option](option,options_, val);
+          return set_bool_convert_to_default_[option](val);
         }else {
           throw std::runtime_error(error_msg + option + 
               ", converting from  type set<bool>.");
         }
       } else if (val.type() == typeid(std::set<int>)) { 
         if ( set_int_convert_to_default_.count(option) ) {
-          return set_int_convert_to_default_[option](option,options_, val);
+          return set_int_convert_to_default_[option](val);
         }else {
           throw std::runtime_error(error_msg + option + 
               ", converting from  type set<int>.");
         }
       } else if (val.type() == typeid(std::vector<int>)) { 
         if ( vector_int_convert_to_default_.count(option) ) {
-          return vector_int_convert_to_default_[option](option,options_, val);
+          return vector_int_convert_to_default_[option](val);
         }else {
           throw std::runtime_error(error_msg + option + 
               ", converting from  type vector<int>.");
         }
       } else if (val.type() == typeid(std::vector<std::string>)) { 
         if ( vector_str_convert_to_default_.count(option) ) {
-          return vector_str_convert_to_default_[option](option,options_, val);
+          return vector_str_convert_to_default_[option](val);
         }else {
           throw std::runtime_error(error_msg + option + 
               ", converting from  type vector<string>.");
         }
       } else if (val.type() == typeid(std::vector<bool>)) { 
         if ( vector_bool_convert_to_default_.count(option) ) {
-          return vector_bool_convert_to_default_[option](option,options_, val);
+          return vector_bool_convert_to_default_[option](val);
         }else {
           throw std::runtime_error(error_msg + option + 
               ", converting from  type vector<bool>.");

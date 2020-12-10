@@ -10,7 +10,7 @@ using namespace std;
 namespace mamap { 
   namespace {
 
-    std::any convertIntBoundToDefault_(Option option, std::map<Option, std::any> options_, std::any val) {
+    std::any convertIntBoundToDefault_(std::any val) {
       int value = std::any_cast<int>(val);
       if ( value < 0 ) {
         throw std::runtime_error("Cannot convert option value to size_t because int value is less than 0.");
@@ -20,7 +20,7 @@ namespace mamap {
       return converted_val;
     }
 
-    std::any convertSizeTBoundToDefault_(Option option, std::map<Option, std::any> options_, std::any val) {
+    std::any convertSizeTBoundToDefault_(std::any val) {
       return val;
     }
 

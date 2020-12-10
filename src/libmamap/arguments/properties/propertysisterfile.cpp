@@ -33,11 +33,11 @@ namespace mamap {
       return values.at(0);
     }
 
-    std::any convertVecStrToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
+    std::any convertVecStrToDefault_(std::any val){
       return val;
     }
 
-    std::any convertSetStrToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
+    std::any convertSetStrToDefault_(std::any val){
       set<string> values = std::any_cast<std::set<std::string>>(val);
       std::vector<string> new_values;
       for ( auto value : values ) {
@@ -46,7 +46,7 @@ namespace mamap {
       return new_values;
     }
 
-    std::any convertStrToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
+    std::any convertStrToDefault_(std::any val){
       if( val.type() == typeid(string) ) {
         return std::vector<string>{std::any_cast<std::string>(val)};
       } else if (val.type() == typeid(const char *)) {
@@ -86,11 +86,11 @@ namespace mamap {
       return values_new;
     }
 
-    std::any convertVecBoolEXISTToDefault_(Option option, std::map<Option, std::any> options_, std::any val) {
+    std::any convertVecBoolEXISTToDefault_(std::any val) {
       return val;
     }
 
-    std::any convertVecStrEXISTToDefault_(Option option, std::map<Option, std::any> options_, std::any val) {
+    std::any convertVecStrEXISTToDefault_(std::any val) {
       std::vector<string> values = std::any_cast<std::vector<string>>(val);
       std::vector<bool> values_new;
       for( string value : values ){
@@ -113,7 +113,7 @@ namespace mamap {
       return values_new;
     }
 
-    std::any convertVecIntEXISTToDefault_(Option option, std::map<Option, std::any> options_, std::any val) {
+    std::any convertVecIntEXISTToDefault_(std::any val) {
       std::vector<int> values = std::any_cast<std::vector<int>>(val);
       std::vector<bool> values_new;
       for( int value : values ){

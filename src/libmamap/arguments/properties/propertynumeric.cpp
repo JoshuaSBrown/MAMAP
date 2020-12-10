@@ -13,15 +13,15 @@ namespace mamap {
 
 namespace {
 
-  std::any convertIntBoundToDefault_(Option option, std::map<Option, std::any> options, std::any val) {
+  std::any convertIntBoundToDefault_(std::any val) {
     return static_cast<double>(std::any_cast<int>(val));
   }
 
-  std::any convertSizeTBoundToDefault_(Option option, std::map<Option, std::any> options, std::any val) {
+  std::any convertSizeTBoundToDefault_(std::any val) {
     return static_cast<double>(std::any_cast<size_t>(val));
   }
 
-  std::any convertDoubleBoundToDefault_(Option option, std::map<Option, std::any> options, std::any val) {
+  std::any convertDoubleBoundToDefault_(std::any val) {
     return val;
   }
 

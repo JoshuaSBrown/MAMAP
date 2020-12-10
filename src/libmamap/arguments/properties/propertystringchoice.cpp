@@ -28,7 +28,7 @@ namespace mamap {
     }
 
     // Convert from a set of bools to a set of strings
-    std::any convertSetBoolEnforcedToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
+    std::any convertSetBoolEnforcedToDefault_(std::any val){
       // Because the default is a set of strings
       set<bool> values = std::any_cast<set<bool>>(val);
       set<string> default_values;
@@ -55,7 +55,7 @@ namespace mamap {
       return values;
     }
 
-    std::any convertStrEnforcedToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
+    std::any convertStrEnforcedToDefault_(std::any val){
       std::string value;
       if ( val.type() == typeid(std::string) ) {
         value = std::any_cast<std::string>(val);
@@ -73,7 +73,7 @@ namespace mamap {
       return stored_values;
     }
 
-    std::any convertSetStrEnforcedToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
+    std::any convertSetStrEnforcedToDefault_(std::any val){
       return val;
     }
 
@@ -91,7 +91,7 @@ namespace mamap {
       return values;
     }
 
-    std::any convertSetIntEnforcedToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
+    std::any convertSetIntEnforcedToDefault_(std::any val){
       set<int> values = std::any_cast<set<int>>(val);
       set<string> default_values;
       for ( int val : values){
@@ -120,7 +120,7 @@ namespace mamap {
       return stored_values;
     }
 
-    std::any convertSetStrAllowedValuesToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
+    std::any convertSetStrAllowedValuesToDefault_(std::any val){
       // Because the default is a set of strings
       return val;
     }
@@ -135,7 +135,7 @@ namespace mamap {
       return values;
     }
 
-    std::any convertVectorStrAllowedValuesToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
+    std::any convertVectorStrAllowedValuesToDefault_(std::any val){
       // Because the default is a set of strings
       vector<string> values = std::any_cast<vector<string>>(val);
       set<string> default_values;
@@ -145,7 +145,7 @@ namespace mamap {
       return default_values;
     }
 
-    std::any convertStrAllowedValuesToDefault_(Option option, std::map<Option, std::any> options_, std::any val){
+    std::any convertStrAllowedValuesToDefault_(std::any val){
       // Because the default is a set of strings
       string values = std::any_cast<string>(val);
       set<string> default_values;
