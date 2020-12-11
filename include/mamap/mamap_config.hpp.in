@@ -8,6 +8,8 @@
 namespace mamap {
 const int mamap_VERSION_MAJOR = @mamap_VERSION_MAJOR@;
 const int mamap_VERSION_MINOR = @mamap_VERSION_MINOR@;
+const int mamap_VERSION_PATCH = @mamap_VERSION_PATCH@;
+const int mamap_SOVERSION = @SOVERSION@;
 const int mamap_YEAR_PUBLISHED = @mamap_YEAR_PUBLISHED@;
 const std::string mamap_AUTHOR_SURNAME = @mamap_AUTHOR_SURNAME@;
 const std::string mamap_AUTHOR_INITIALS = @mamap_AUTHOR_INITIALS@;

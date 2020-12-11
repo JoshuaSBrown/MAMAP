@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.14)
-project (mamap)
+project (mamap VERSION 1.0.0)
 
 ##############################################################################
 # Defining options 
@@ -12,8 +12,7 @@ option(CODE_COVERAGE "Enable coverage reporting" OFF)
 ##############################################################################
 # Defining settings 
 ##############################################################################
-set(mamap_VERSION_MAJOR 1 )
-set(mamap_VERSION_MINOR 0 )
+set(SOVERSION 1)
 set(mamap_YEAR_PUBLISHED 2020 )
 set(mamap_AUTHOR_SURNAME "\"Brown\"" )
 set(mamap_AUTHOR_INITIALS "\"J. S.\"" )
@@ -72,7 +71,6 @@ include_directories(${mamap_BINARY_DIR}/include)
 file(GLOB MAP_SOURCE_FILES 
   ${mamap_SOURCE_DIR}/src/libmamap/argumentparser.cpp
   ${mamap_SOURCE_DIR}/src/libmamap/arguments/argumentfile.cpp
-  ${mamap_SOURCE_DIR}/src/libmamap/arguments/argumentobject.cpp
   ${mamap_SOURCE_DIR}/src/libmamap/arguments/argumentnumerical.cpp
   ${mamap_SOURCE_DIR}/src/libmamap/arguments/argumentstring.cpp
   ${mamap_SOURCE_DIR}/src/libmamap/arguments/argumentswitch.cpp

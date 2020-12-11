@@ -1,3 +1,6 @@
+
+set_target_properties(mamap PROPERTIES VERSION ${mamap_VERSION} SOVERSION ${SOVERSION})
+
 target_include_directories(mamap PUBLIC
   $<BUILD_INTERFACE:${mamap_SOURCE_DIR}/include/mamap>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/mamap>
