@@ -1,6 +1,6 @@
 
-#include "propertyfileexist.hpp"
-#include "string_support.hpp"
+#include "mamap/arguments/properties/propertyfileexist.hpp"
+#include "mamap/string_support.hpp"
 #include <stdexcept>
 #include <sys/stat.h>
 

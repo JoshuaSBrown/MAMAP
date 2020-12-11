@@ -1,5 +1,5 @@
 
-#include "string_support.hpp"
+#include "mamap/string_support.hpp"
 #include <algorithm>
 #include <iostream>
 #include <istream>

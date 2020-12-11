@@ -1,5 +1,5 @@
-#include "propertyobject.hpp"
-#include "propertystring.hpp"
+#include "mamap/arguments/properties/propertyobject.hpp"
+#include "mamap/arguments/properties/propertystring.hpp"
 
 #include <any>
 #include <map>

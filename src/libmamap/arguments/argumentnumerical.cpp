@@ -1,6 +1,6 @@
 
-#include "argumentnumerical.hpp"
-#include "properties/propertynumeric.hpp"
+#include "mamap/arguments/argumentnumerical.hpp"
+#include "mamap/arguments/properties/propertynumeric.hpp"
 #include <iostream>
 #include <memory>
 

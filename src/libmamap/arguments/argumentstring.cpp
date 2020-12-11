@@ -1,7 +1,7 @@
 
-#include "argumentstring.hpp"
-#include "properties/propertystring.hpp"
-#include "properties/propertystringchoice.hpp"
+#include "mamap/arguments/argumentstring.hpp"
+#include "mamap/arguments/properties/propertystring.hpp"
+#include "mamap/arguments/properties/propertystringchoice.hpp"
 #include <iostream>
 
 using namespace mamap;

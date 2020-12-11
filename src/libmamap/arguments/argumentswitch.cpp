@@ -1,6 +1,6 @@
 
-#include "argumentswitch.hpp"
-#include "properties/propertyswitch.hpp"
+#include "mamap/arguments/argumentswitch.hpp"
+#include "mamap/arguments/properties/propertyswitch.hpp"
 #include <iostream>
 
 using namespace mamap;

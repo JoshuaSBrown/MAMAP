@@ -30,14 +30,6 @@ set(LOG_LEVEL 0 CACHE STRING "Choose the log level" )
 # important for using gcov .o.gcno or .cpp.gcno now will be .gcno
 set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE 1)
 set(CMAKE_CXX_FLAGS "-Wall -std=c++11 -Werror")
-##############################################################################
-# Configuring header file with cmake variables 
-##############################################################################
-# Configure header file to pass some of the CMake settings to the source code
-configure_file(
-  "${PROJECT_SOURCE_DIR}/src/libmamap/mamap_config.hpp.in"
-  "${PROJECT_SOURCE_DIR}/src/libmamap/mamap_config.hpp"
-  )
 
 ##############################################################################
 # Finding dependencies 
@@ -66,9 +58,44 @@ if(ENABLE_UNIT_TESTING )
   enable_testing()
   include(ParseAndAddCatchTests)
 endif()
+
+###########################
+# Setup relative includes #
+###########################
+include_directories(${mamap_SOURCE_DIR}/include)
+include_directories(${mamap_BINARY_DIR}/include)
+
+############################
+# Add source files
+############################
+
+file(GLOB MAP_SOURCE_FILES 
+  ${mamap_SOURCE_DIR}/src/libmamap/argumentparser.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/argumentfile.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/argumentobject.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/argumentnumerical.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/argumentstring.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/argumentswitch.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/argumenttypes.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/properties/propertystringchoice.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/properties/propertyfileexist.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/properties/propertyfileext.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/properties/propertynumeric.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/properties/propertysisterfile.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/properties/propertystring.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/properties/propertyswitch.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/properties/propertyobject.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/properties/propertyoptions.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/arguments/properties/propertytypes.cpp
+  ${mamap_SOURCE_DIR}/src/libmamap/string_support.cpp 
+  )
+
+add_library(mamap ${MAP_SOURCE_FILES})
+set_property(TARGET mamap PROPERTY CXX_STANDARD 17)
+
 ##############################################################################
 # Compiling build tree/paths 
 ##############################################################################
-add_subdirectory("${PROJECT_SOURCE_DIR}/src")
+add_subdirectory("${mamap_SOURCE_DIR}/include/mamap")
 
-
+include(${mamap_SOURCE_DIR}/cmake/MAMAPInstall.cmake)

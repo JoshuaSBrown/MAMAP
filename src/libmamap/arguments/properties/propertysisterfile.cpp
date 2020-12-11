@@ -1,6 +1,6 @@
 
-#include "propertysisterfile.hpp"
-#include "string_support.hpp"
+#include "mamap/arguments/properties/propertysisterfile.hpp"
+#include "mamap/string_support.hpp"
 #include <stdexcept>
 #include <set>
 #include <vector>

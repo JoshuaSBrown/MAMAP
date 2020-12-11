@@ -1,4 +1,4 @@
-#include "propertytypes.hpp"
+#include "mamap/arguments/properties/propertytypes.hpp"
 
 namespace mamap {
   std::string operator+(std::string str, const PropertyType prop) {

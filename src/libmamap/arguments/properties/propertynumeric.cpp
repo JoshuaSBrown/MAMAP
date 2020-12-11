@@ -1,7 +1,6 @@
 
-#include "propertynumeric.hpp"
-
-#include "propertyobject.hpp"
+#include "mamap/arguments/properties/propertynumeric.hpp"
+#include "mamap/arguments/properties/propertyobject.hpp"
 
 #include <limits>
 #include <sstream>

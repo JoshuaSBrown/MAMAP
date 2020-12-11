@@ -7,10 +7,10 @@
 #include <typeindex>
 #include <vector>
 
-#include "argumentparser.hpp"
+#include "mamap/argumentparser.hpp"
 
-#include "mamap_config.hpp"
-#include "string_support.hpp"
+#include "mamap/mamap_config.hpp"
+#include "mamap/string_support.hpp"
 
 using namespace std;
 

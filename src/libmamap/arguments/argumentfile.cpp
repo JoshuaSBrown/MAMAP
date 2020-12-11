@@ -1,8 +1,8 @@
 
-#include "argumentfile.hpp"
-#include "properties/propertyfileexist.hpp"
-#include "properties/propertyfileext.hpp"
-#include "properties/propertysisterfile.hpp"
+#include "mamap/arguments/argumentfile.hpp"
+#include "mamap/arguments/properties/propertyfileexist.hpp"
+#include "mamap/arguments/properties/propertyfileext.hpp"
+#include "mamap/arguments/properties/propertysisterfile.hpp"
 #include <iostream>
 
 using namespace mamap;

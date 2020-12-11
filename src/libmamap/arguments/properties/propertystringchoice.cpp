@@ -1,6 +1,6 @@
 
-#include "propertystringchoice.hpp"
-#include "string_support.hpp"
+#include "mamap/arguments/properties/propertystringchoice.hpp"
+#include "mamap/string_support.hpp"
 #include <iostream>
 #include <set>
 #include <stdexcept>

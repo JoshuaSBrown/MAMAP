@@ -1,6 +1,6 @@
 
-#include "propertyswitch.hpp"
-#include "string_support.hpp"
+#include "mamap/arguments/properties/propertyswitch.hpp"
+#include "mamap/string_support.hpp"
 
 #include <limits>
 
