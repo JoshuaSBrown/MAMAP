@@ -42,7 +42,8 @@ class PropertyObject {
   bool conversionAllowed_(Option option, std::type_index type) const {
     if( type == typeid(std::any) ) return true;
     if( allowed_option_types_.count(option) == 0) {
-      throw std::runtime_error("No allowed option types have been specefied for Option: " + option); 
+      std::string error_msg = "No allowed option types have been specefied for property (" + getPropertyType() + ") using Option (" + option + ")";
+      throw std::runtime_error(error_msg); 
     } 
     for ( const std::type_index & allowed_type : allowed_option_types_.at(option) ){
       if( allowed_type == type ) return true;
@@ -101,7 +102,7 @@ class PropertyObject {
   std::map<Option,vector_int_func_to_default> vector_int_convert_to_default_;
 
   std::any convert_to_default_(const Option option, const std::any & val) {
-      std::string error_msg = "Missing conversion to default function for option ";
+      std::string error_msg = "Missing conversion to default function for property (" + getPropertyType() + ") with option (" + option + ")";
       if (val.type() == typeid(int) || val.type() == typeid(const int)) {
         if( int_convert_to_default_.count(option) ) { 
           return int_convert_to_default_[option](val);
@@ -179,7 +180,10 @@ class PropertyObject {
               ", converting from  type vector<bool>.");
         }
       }
-      throw std::runtime_error("Conversion to the proposed default type is not supported for option " + option);
+      std::string error_msg2 ="Conversion to the proposed default type is not ";
+      error_msg2 += "supported for property (" + getPropertyType() + ") using ";
+      error_msg2 += "option (" + option +")";
+      throw std::runtime_error(error_msg2);
   }
 
   template<class T>
@@ -306,7 +310,8 @@ class PropertyObject {
   template<class T>
   T getPropOption(const Option &option) const {
     if (!propOptionValid_(option)) {
-      std::string err = " An unrecognized property option was detected.";
+      std::string err = "The option " + option + " is not available to ";
+      err += " the property " + getPropertyType();
       throw std::invalid_argument(err);
     }
 

@@ -15,7 +15,7 @@ install(TARGETS mamap EXPORT mamapTargets
   )
 
 # Install config files
-install(FILES ${PROJECT_SOURCE_DIR}/cmake/MAMAPConfig.cmake DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mamap")
+install(FILES ${PROJECT_SOURCE_DIR}/cmake/mamapConfig.cmake DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mamap")
 
 install(EXPORT mamapTargets
   FILE mamapTargets.cmake

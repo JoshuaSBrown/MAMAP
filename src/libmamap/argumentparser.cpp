@@ -201,16 +201,11 @@ namespace mamap {
         std::cout << "Type is a switch" << std::endl;
         unrecognized = false;
         if(defaults_set_[flag] == true ){
-          //values_[flag][std::type_index(typeid(bool))].at(0) = true;
-          //addValue_(flag, "TRUE");
-
           values_[flag].at(0) = "true";
         }else {
-          //addValue_(flag, "TRUE");
           values_[flag].emplace_back("true");
         }
       } else { 
-        std::cout << "Index is " << index << std::endl;
         if ((index + 1) >= arguments.size()) {
           string err = "" + flag + " Missing arguments";
           throw runtime_error(err);

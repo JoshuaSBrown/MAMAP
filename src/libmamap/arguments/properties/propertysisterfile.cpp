@@ -136,7 +136,7 @@ namespace mamap {
     default_option_type_.insert(std::pair<Option, type_index>(Option::FILE_PATH_NAME, type_index(typeid(vector<string>))));
     default_option_type_.insert(std::pair<Option, type_index>(Option::DOES_EXIST, type_index(typeid(vector<bool>))));
 
-
+    // Stores the extensions 
     allowed_option_types_[Option::ALLOWED_VALUES].push_back(type_index(typeid(vector<string>)));
     allowed_option_types_[Option::ALLOWED_VALUES].push_back(type_index(typeid(set<string>)));
     allowed_option_types_[Option::ALLOWED_VALUES].push_back(type_index(typeid(string)));

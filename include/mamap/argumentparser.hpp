@@ -5,6 +5,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <sstream>
 #include <utility>
 
 #include "arguments/argumentnumerical.hpp"
@@ -53,19 +54,22 @@ class ArgumentParser {
   // Set Defaults for the flags in the case that they are not found
   template<class T>
   void setFlagDefaultValue(std::string flag,const T & val) {
-    std::string value;
-    if(typeid(val) == typeid(std::string)){
-      value = val;
-    } else {
-      value = std::to_string(val);
-    }
-
-    values_[flag].push_back(value);
+    std::stringstream ss;
+    ss << val;
+    values_[flag].push_back(ss.str());
     defaults_set_[flag] = true;
   }
 
   // Add a argument without setting any of the values
   void addFlagArg(std::string flag, ArgumentType argname);
+
+
+  size_t getNumArgs(const std::string & flag) const noexcept {
+    if( values_.count(flag) ) {
+      return values_.at(flag).size();
+    }
+    return 0;
+  }
 
   // Set the rules for the flag and the type it is associated with types
   // include:
@@ -113,10 +117,27 @@ class ArgumentParser {
   }
 
   template<class T>
+  std::vector<T> getFlagArgOptValues(
+      std::string flag,
+      ArgumentType type,
+      PropertyType property,
+      Option option) {
+
+    if(arg_.count(flag) == 0) {
+      throw std::runtime_error("Flag is unknown");
+    }
+    std::vector<T> values;
+    for ( const auto & val : arg_[flag]){
+      values.push_back(val->getPropertyValues<T>(property,option));
+    }
+    return values;
+  }
+
+  template<class T>
   std::vector<T> get(std::string flag) {
     std::vector<T> values;
     ArgumentType type = arg_[flag].front()->getArgumentType(); 
-    if(type == ArgumentType::SWITCH){
+    if(type == ArgumentType::SWITCH || typeid(T) == typeid(bool)){
       for ( std::string & val : values_[flag] ){
         if (std::is_arithmetic_v<T>) {
           if(val=="true") {
