@@ -43,6 +43,7 @@ class PropertyObject {
     if( type == typeid(std::any) ) return true;
     if( allowed_option_types_.count(option) == 0) {
       std::string error_msg = "No allowed option types have been specefied for property (" + getPropertyType() + ") using Option (" + option + ")";
+      error_msg += getAllowedOptions();
       throw std::runtime_error(error_msg); 
     } 
     for ( const std::type_index & allowed_type : allowed_option_types_.at(option) ){
@@ -283,6 +284,15 @@ class PropertyObject {
  public:
   virtual ~PropertyObject(void) { }
 
+  std::string getAllowedOptions() const noexcept {
+    std::string message = "\nAllowed options for property (" + getPropertyType() + ") include:";
+    for( auto opt_any : options_ ) {
+      message += "\n " + opt_any.first;
+    }
+    message += "\n";
+    return message;
+  }
+
   virtual bool propValid(const std::any &value) = 0;
 
   PropertyType getPropertyType(void) const noexcept {
@@ -302,8 +312,9 @@ class PropertyObject {
   // WARNING setting a property value will overwrite existing values
   void setPropOption(Option option, const std::any & val) {
     if (!propOptionValid_(option)) {
-      std::string err = "Cannot set option (" + option + " from property (";
+      std::string err = "Cannot set option (" + option + ") from property (";
       err += "" + getPropertyType() + "), option is unrecognized.";
+      err += getAllowedOptions();
       throw std::invalid_argument(err);
     }
     setPropOption_(option, val);
@@ -312,8 +323,9 @@ class PropertyObject {
   template<class T>
   T getPropOption(const Option &option) const {
     if (!propOptionValid_(option)) {
-      std::string err = "The option " + option + " is not available to ";
+      std::string err = "Cannot get property option. The option " + option + " is not available to ";
       err += " the property " + getPropertyType();
+      err += getAllowedOptions();
       throw std::invalid_argument(err);
     }
 

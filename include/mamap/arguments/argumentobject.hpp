@@ -143,7 +143,7 @@ namespace mamap {
                 setval = true;
               } catch (std::exception & e) {
                 std::string err = "Error in setting property option";
-                err += "\nArgument: " + this->getArgumentType();
+                err += "\n Argument: " + this->getArgumentType();
                 err += "\n Property: " + property;
                 err += "\n Option: " + option;
                 err += "\n" + std::string(e.what());
