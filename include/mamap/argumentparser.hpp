@@ -93,7 +93,15 @@ class ArgumentParser {
         arg_[flag].push_back(std::move(arg));
       } else {
         for ( std::unique_ptr<ArgumentObject> & ptr : arg_[flag]){
-          ptr->setArgPropertyOpt(property, option, val);
+          try {
+            ptr->setArgPropertyOpt(property, option, val);
+          } catch (std::exception & e) {
+            std::stringstream ss;
+            ss << "Error in setFlagArgOpt with flag (" + flag + ")"; 
+            ss << " attempting to set value of option to " << val;
+            ss << "\n" + std::string(e.what());
+            throw std::runtime_error(ss.str());
+          }
         }
       }
 
@@ -113,7 +121,16 @@ class ArgumentParser {
     if(index>arg_[flag].size()) {
       throw std::runtime_error("Index is larger than the number of flags");
     }
-    return arg_[flag].at(index)->getPropertyValues<T>(property,option);
+    T val;
+    try {
+      val = arg_[flag].at(index)->getPropertyValues<T>(property,option);
+    } catch (std::exception & e) {
+      std::stringstream ss;
+      ss << "Error in getFlagArgOptValue with flag (" + flag + ")"; 
+      ss << "\n" + std::string(e.what());
+      throw std::runtime_error(ss.str());
+    }
+    return val;
   }
 
   template<class T>
@@ -127,8 +144,15 @@ class ArgumentParser {
       throw std::runtime_error("Flag is unknown");
     }
     std::vector<T> values;
-    for ( const auto & val : arg_[flag]){
-      values.push_back(val->getPropertyValues<T>(property,option));
+    try {
+      for ( const auto & val : arg_[flag]){
+        values.push_back(val->getPropertyValues<T>(property,option));
+      }
+    } catch (std::exception & e) {
+      std::stringstream ss;
+      ss << "Error in getFlagArgOptValues with flag (" + flag + ")"; 
+      ss << "\n" + std::string(e.what());
+      throw std::runtime_error(ss.str());
     }
     return values;
   }
