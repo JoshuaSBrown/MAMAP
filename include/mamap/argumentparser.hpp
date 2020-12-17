@@ -98,7 +98,6 @@ class ArgumentParser {
           } catch (std::exception & e) {
             std::stringstream ss;
             ss << "Error in setFlagArgOpt with flag (" + flag + ")"; 
-            ss << " attempting to set value of option to " << val;
             ss << "\n" + std::string(e.what());
             throw std::runtime_error(ss.str());
           }
