@@ -15,6 +15,8 @@ namespace mamap {
     } else if(prop == PropertyType::STRING) {
       return str + std::string("STRING");
     } else if(prop == PropertyType::STRING_CHOICE) {
+      return str + std::string("SWITCH_CHOICE");
+    } else if(prop == PropertyType::SWITCH) {
       return str + std::string("SWITCH");
     }
     return str;
