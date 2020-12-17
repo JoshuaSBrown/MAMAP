@@ -302,7 +302,9 @@ class PropertyObject {
   // WARNING setting a property value will overwrite existing values
   void setPropOption(Option option, const std::any & val) {
     if (!propOptionValid_(option)) {
-      throw std::invalid_argument("Property option is unrecognized.");
+      std::string err = "Cannot set option (" + option + " from property (";
+      err += "" + getPropertyType() + "), option is unrecognized.";
+      throw std::invalid_argument(err);
     }
     setPropOption_(option, val);
   }

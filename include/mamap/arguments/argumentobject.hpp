@@ -138,8 +138,17 @@ namespace mamap {
           bool setval = false;
           for (const std::unique_ptr<PropertyObject> & prop : propobjs_) {
             if (property == prop->getPropertyType()) {
-              prop->setPropOption(option, val);
-              setval = true;
+              try {
+                prop->setPropOption(option, val);
+                setval = true;
+              } catch (std::exception & e) {
+                std::string err = "Error in setting property option";
+                err += "\nArgument: " + this->getArgumentType();
+                err += "\n Property: " + property;
+                err += "\n Option: " + option;
+                err += "\n" + std::string(e.what());
+                throw std::runtime_error(err);
+              }
             }
           }
           if (!setval) {
