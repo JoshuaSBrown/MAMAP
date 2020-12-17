@@ -256,7 +256,13 @@ namespace mamap {
     //for (std::pair<std::string, std::vector<std::unique_ptr<ArgumentObject>>> & flag_arg : arg_) {
     for (auto & flag_arg : arg_) {
       for ( std::unique_ptr<ArgumentObject> & arg : flag_arg.second ){
-        arg->postArgCheck();
+        try {
+          arg->postArgCheck();
+        } catch(const std::exception & e) {
+          std::string err = "Error in postParseCheck detected while checking flag " + flag_arg.first;
+          err += "\n" + std::string(e.what());
+          throw std::runtime_error(err);
+        }
       }
     }
   }
