@@ -6,6 +6,7 @@
 #include <set>
 #include <string>
 #include <sstream>
+#include <unordered_set>
 #include <utility>
 
 #include "arguments/argumentnumerical.hpp"
@@ -18,6 +19,17 @@ namespace mamap {
   std::unique_ptr<ArgumentObject> createArgument(ArgumentType type);
 
 class ArgumentParser {
+  public:
+    struct Citation {
+      std::string project_AUTHOR_SURNAME;
+      std::string project_AUTHOR_INITIALS;
+      std::string project_YEAR_PUBLISHED;
+      std::string project_TITLE;
+      std::string project_VERSION_MAJOR;
+      std::string project_VERSION_MINOR;
+      std::string project_VERSION_PATCH;
+      std::string project_URL;
+    };
  private:
   // 1 - flag name
   // 2 - type
@@ -25,6 +37,9 @@ class ArgumentParser {
 
   // Known rules
   std::set<std::string> argument_types_;
+
+  // Keeps a list of the flags that were parsed
+  std::unordered_set<std::string> flags_parsed_;
 
   // Known flags and their description
   std::map<std::string, std::pair<std::string, std::string>> flags_;
@@ -45,12 +60,17 @@ class ArgumentParser {
   size_t maxDescriptionSize;
   size_t maxLineLength = 80;
 
+  Citation citation_;
  public:
+
   // 1 - short flag
   // 2 - long flag
   // 3 - description
   explicit ArgumentParser(std::set<std::vector<std::string>> flags);
 
+  void setCitation(const Citation & citation) {
+    citation_ = citation;
+  }
   // Set Defaults for the flags in the case that they are not found
   template<class T>
   void setFlagDefaultValue(std::string flag,const T & val) {
@@ -80,7 +100,7 @@ class ArgumentParser {
   // The rules are dependent on the type
   template<class T>
     void setFlagArgOpt(
-        std::string flag, 
+        const std::string & flag, 
         ArgumentType argname,
         PropertyType property,
         Option option,
@@ -108,21 +128,21 @@ class ArgumentParser {
 
   template<class T>
   T getFlagArgOptValue(
-      std::string flag,
+      const std::string & flag,
       int index,
       ArgumentType type,
       PropertyType property,
-      Option option) {
+      Option option) const {
 
     if(arg_.count(flag) == 0) {
       throw std::runtime_error("Flag is unknown");
     }
-    if(index>arg_[flag].size()) {
+    if(index>arg_.at(flag).size()) {
       throw std::runtime_error("Index is larger than the number of flags");
     }
     T val;
     try {
-      val = arg_[flag].at(index)->getPropertyValues<T>(property,option);
+      val = arg_.at(flag).at(index)->getPropertyValues<T>(property,option);
     } catch (std::exception & e) {
       std::stringstream ss;
       ss << "Error in getFlagArgOptValue with flag (" + flag + ")"; 
@@ -134,17 +154,17 @@ class ArgumentParser {
 
   template<class T>
   std::vector<T> getFlagArgOptValues(
-      std::string flag,
+      const std::string & flag,
       ArgumentType type,
       PropertyType property,
-      Option option) {
+      Option option) const {
 
     if(arg_.count(flag) == 0) {
-      throw std::runtime_error("Flag is unknown");
+      throw std::runtime_error("Flag is unknown" + flag);
     }
     std::vector<T> values;
     try {
-      for ( const auto & val : arg_[flag]){
+      for ( const auto & val : arg_.at(flag)){
         values.push_back(val->getPropertyValues<T>(property,option));
       }
     } catch (std::exception & e) {
@@ -156,12 +176,30 @@ class ArgumentParser {
     return values;
   }
 
+
+  /**
+   * @brief Returns whether the flag was parsed when the arguments were read in. 
+   *
+   * @param flag
+   *
+   * @return true or false 
+   */
+  bool flagParsed(const std::string & flag) const noexcept {
+    return flags_parsed_.count(flag);
+  }
+
   template<class T>
-  std::vector<T> get(std::string flag) {
+  std::vector<T> get(const std::string & flag) const {
+    if(arg_.count(flag) == 0) {
+      throw std::runtime_error("Flag is unknown cannot get argument " + flag);
+    }
     std::vector<T> values;
-    ArgumentType type = arg_[flag].front()->getArgumentType(); 
+    ArgumentType type = arg_.at(flag).front()->getArgumentType(); 
     if(type == ArgumentType::SWITCH || typeid(T) == typeid(bool)){
-      for ( std::string & val : values_[flag] ){
+      if(values_.count(flag) == 0) {
+        throw std::runtime_error("No values stored for flag " + flag);
+      }
+      for ( const std::string & val : values_.at(flag) ){
         if (std::is_arithmetic_v<T>) {
           if(val=="true") {
             std::variant<std::string,int,double,long,size_t,float,bool> var = 1;
@@ -176,12 +214,12 @@ class ArgumentParser {
         }
       }
     }else {
-      for ( std::string & val : values_[flag] ){
-        std::cout << "Convering value " << val << std::endl;
+      if(values_.count(flag) == 0) {
+        throw std::runtime_error("No values stored for flag " + flag);
+      }
+      for ( const std::string & val : values_.at(flag) ){
         if( std::is_unsigned<T>::value ) {
-          std::cout << "Converting to unsigned type" << std::endl;
           if(val.size() > 0) {
-            std::cout << "Checking first char " << val[0] << std::endl;
             if(val[0] == '-'){
               throw std::runtime_error("You are attempting to convert a signed value to an unsigned value " + val);
             }

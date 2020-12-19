@@ -192,13 +192,13 @@ namespace mamap {
     // Parse String Arguments
     if (arg_.count(flag) != 0) {
 
+      flags_parsed_.insert(flag);
       ArgumentType type = arg_[flag].front()->getArgumentType(); 
       // Switch does not require an argument
       if ( type == ArgumentType::SWITCH && 
           (nextParameterIsAFlag_(index, arguments) ||
            (index + 1) >= arguments.size())){
       
-        std::cout << "Type is a switch" << std::endl;
         unrecognized = false;
         if(defaults_set_[flag] == true ){
           values_[flag].at(0) = "true";
@@ -206,6 +206,7 @@ namespace mamap {
           values_[flag].emplace_back("true");
         }
       } else { 
+
         if ((index + 1) >= arguments.size()) {
           string err = "" + flag + " Missing arguments";
           throw runtime_error(err);
@@ -213,28 +214,23 @@ namespace mamap {
         int arg_index = 0;
         do { // Allow reading of multiple arguments
           string argument = arguments.at(index + 1);
-          std::cout << "Parsing argument " << argument << std::endl;
           if ( arg_index != 0){
             // Need to duplicate the argument
             addFlagArg(flag, type);
-            ArgumentType type = arg_[flag].front()->getArgumentType();
             std::vector<PropertyType> arg_props = arg_[flag].front()->getProperties();
-              
             auto values = arg_[flag].front()->getPropertyValues();
-            arg_[flag].push_back(createArgument(type));
             arg_[flag].back()->setValues(values);
-            // TODO Need to specify index setFlagArgOpt(flag, arg_name, property, option, val);
+
           }
           arg_[flag].at(arg_index)->argValid(argument);
           unrecognized = false;
           if (defaults_set_.count(flag) ) {
             if(defaults_set_[flag] == true ){
               values_[flag].clear();
-              //addValue_(flag,argument);
+              std::cout << "Cleared values " << std::endl;
               values_[flag].emplace_back(argument);
               defaults_set_[flag] = false;
             } else {
-              //addValue_(flag,argument);
               values_[flag].emplace_back(argument);
             }
           }
@@ -272,11 +268,6 @@ namespace mamap {
     // Convert to vector of strings
     vector<string> arguments(argv , argv + argc);
 
-    std::cout << "All arguments" << std::endl;
-    for (std::string & str : arguments ) {
-      std::cout << str << std::endl;
-    }
-
     if (argc <= 1) {
       cout << "Usage: " << arguments.at(0) << " <options(s)> SOURCES";
       showUsage();
@@ -293,11 +284,9 @@ namespace mamap {
     size_t allowed_args_before_exit = 2;
     size_t index = 1;
     for (; index < arguments.size(); ++index) {
-      std::cout << "Arg loop index " << index << " size " << arguments.size() << " argument is " << arguments.at(index) << std::endl;
-      std::cout << "Arg 0 val " << arguments.at(0) << std::endl;
-      std::cout << "Arg size -1 val " << arguments.back() << std::endl;
       if (help_flag.compare(arguments.at(index)) == 0 ||
           help_flag_short.compare(arguments.at(index)) == 0) {
+        flags_parsed_.insert(arguments.at(index));
         cout << "Usage: " << arguments.at(0) << " <options(s)> SOURCES";
         showUsage();
         if (allowed_args_before_exit == arguments.size()) {
@@ -306,24 +295,27 @@ namespace mamap {
         ++allowed_args_before_exit;
       } else if (version_flag.compare(arguments.at(index)) == 0 ||
                  version_flag_short.compare(arguments.at(index)) == 0) {
+
+        flags_parsed_.insert(arguments.at(index));
         exit(0);
       } else if (citation_flag.compare(arguments.at(index)) == 0 ||
                  citation_flag_short.compare(arguments.at(index)) == 0) {
-        cout << "\nCitation: " << mamap_AUTHOR_SURNAME << ", ";
-        cout << mamap_AUTHOR_INITIALS << " (";
-        cout << mamap_YEAR_PUBLISHED << "). ";
-        cout << mamap_TITLE << " (Version ";
-        cout << mamap_VERSION_MAJOR << ".";
-        cout << mamap_VERSION_MINOR << "). [Software]. Available from ";
-        cout << mamap_URL << ".\n\n";
+
+        flags_parsed_.insert(arguments.at(index));
+        cout << "\nCitation: " << citation_.project_AUTHOR_SURNAME << ", ";
+        cout << citation_.project_AUTHOR_INITIALS << " (";
+        cout << citation_.project_YEAR_PUBLISHED << "). ";
+        cout << citation_.project_TITLE << " (Version ";
+        cout << citation_.project_VERSION_MAJOR << ".";
+        cout << citation_.project_VERSION_MINOR << ".";
+        cout << citation_.project_VERSION_PATCH << "). [Software]. Available from ";
+        cout << citation_.project_URL << ".\n\n";
         if (allowed_args_before_exit == arguments.size()) {
           exit(0);
         }
         ++allowed_args_before_exit;
       } else {
-        std::cout << "Index before " << index << " size " << arguments.size() << " argument " << arguments.at(index) << std::endl;
         index = parseArg_(index, arguments);
-        std::cout << "Index after " << index << " size " << arguments.size() << " argument " << arguments.at(index) << std::endl;
       }
     }
     postParseCheck();

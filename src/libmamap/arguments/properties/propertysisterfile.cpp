@@ -222,6 +222,7 @@ namespace mamap {
     }
 
     string fileName = lastStringInPath(fileNamePath);
+
     string path = getPath(fileNamePath);
 
     string sisterFileCore = grabStrBeforeLastOccurance(fileName, ".");
@@ -232,7 +233,7 @@ namespace mamap {
     vector<bool> fileExists;
 
     for (auto sister_ext : sister_exts) {
-
+      
       if (sister_ext.compare("NOT_DEFINED") != 0) {
         string sisterFileName = sisterFileCore + sister_ext;
         string sisterPath = path + sisterFileName;
@@ -245,6 +246,8 @@ namespace mamap {
         } else {
           fileExists.push_back(false);
         }
+      } else {
+        throw std::runtime_error("Sister file extensions have not been specified for " + fileName);
       }
     }
 

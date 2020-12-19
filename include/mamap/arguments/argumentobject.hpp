@@ -86,6 +86,8 @@ namespace mamap {
             }
           }
         }
+
+        auto extensions_are = getPropertyValues<std::vector<std::string>>(PropertyType::SISTER_FILE, Option::ALLOWED_VALUES);
         return opts_values;
       }
 
@@ -159,6 +161,7 @@ namespace mamap {
         }
 
       void setValues(std::map<PropertyType, std::map<Option, std::any>> values) {
+
         for (const std::unique_ptr<PropertyObject> & prop : propobjs_) {
           const PropertyType & type = prop->getPropertyType();
           if(values.count(type)){
@@ -191,7 +194,15 @@ namespace mamap {
 
       void postArgCheck(void) {
         for (const std::unique_ptr<PropertyObject> & prop : propobjs_) {
-          prop->postCheck();
+          try {
+            prop->postCheck();
+          } catch (std::exception & e) {
+            std::string err = "Error in postArgCheck with argument";
+            err += "\n Argument: " + this->getArgumentType();
+            err += "\n Property: " + prop->getPropertyType();
+            err += "\n" + std::string(e.what());
+            throw std::runtime_error(err);
+          }
         }
       }
   };
