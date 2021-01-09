@@ -47,7 +47,8 @@ endif()
 ##############################################################################
 # Setting up testing 
 ##############################################################################
-if(ENABLE_UNIT_TESTING )
+message(STATUS "ENABLE unit testing ${ENABLE_UNIT_TESTING}")
+if(ENABLE_UNIT_TESTING)
   find_package(Catch2 2.11.1)
   if( NOT Catch2 )
     include(${PROJECT_SOURCE_DIR}/cmake/InstallCatch2.cmake)
@@ -95,5 +96,6 @@ set_property(TARGET mamap PROPERTY CXX_STANDARD 17)
 # Compiling build tree/paths 
 ##############################################################################
 add_subdirectory("${mamap_SOURCE_DIR}/include/mamap")
+add_subdirectory("${mamap_SOURCE_DIR}/src")
 
 include(${mamap_SOURCE_DIR}/cmake/MAMAPInstall.cmake)

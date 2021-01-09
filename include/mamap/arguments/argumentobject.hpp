@@ -87,7 +87,7 @@ namespace mamap {
           }
         }
 
-        auto extensions_are = getPropertyValues<std::vector<std::string>>(PropertyType::SISTER_FILE, Option::ALLOWED_VALUES);
+        //auto extensions_are = getPropertyValues<std::vector<std::string>>(PropertyType::SISTER_FILE, Option::ALLOWED_VALUES);
         return opts_values;
       }
 
@@ -110,6 +110,7 @@ namespace mamap {
       template<class T>
         T getPropertyValues(PropertyType property,const Option & option) {
           for (const std::unique_ptr<PropertyObject> & prop : propobjs_) {
+            std::cout << "Contains properties: " + prop->getPropertyType() << std::endl;
             if (property == prop->getPropertyType()) {
               std::vector<Option> vec_opt = prop->getPropertyOptions();
               for (const Option & opt : vec_opt) {
@@ -129,7 +130,8 @@ namespace mamap {
           }
 
           std::string err =
-            "Unable to recognize property (" + property +") or option (" + option + ")";
+            "Argument " + getArgumentType() + " does not recognize property (";
+          err += "" + property + ") or option (" + option + ")";
           throw std::invalid_argument(err);
         }
 

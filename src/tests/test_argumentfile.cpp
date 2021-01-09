@@ -1,7 +1,7 @@
 
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
-#include "arguments/argumentfile.hpp"
+#include "mamap/arguments/argumentfile.hpp"
 
 using namespace mamap;
 using namespace std;

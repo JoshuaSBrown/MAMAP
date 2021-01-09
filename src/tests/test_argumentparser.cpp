@@ -14,19 +14,14 @@
 using namespace mamap;
 using namespace std;
 
-TEST_CASE("Argument Parser","[unit]") {
-
-  cerr << "Testing: ArgumentParser" << endl;
-  cerr << "Testing: constructor" << endl;
-  {
-    vector<string> flag = {
-      "-p_P", "--punfile-pair",
-      "File containing dimer of two "
-        "monomers. This file should have the .pun extension."};
-    set<vector<string>> flags;
-    flags.insert(flag);
-    ArgumentParser ArgPars(flags);
-  }
+TEST_CASE("Argument Parser Testing: constructor","[unit]") {
+  vector<string> flag = {
+    "-p_P", "--punfile-pair",
+    "File containing dimer of two "
+      "monomers. This file should have the .pun extension."};
+  set<vector<string>> flags;
+  flags.insert(flag);
+  ArgumentParser ArgPars(flags);
 }
 
 TEST_CASE("Argument Parser Show Usage","[unit]"){ 
@@ -198,6 +193,14 @@ TEST_CASE("Argument Parser get command","[unit]"){
       PropertyType::SISTER_FILE,
       Option::ALLOWED_VALUES,".log");
 
+  std::ofstream fid("file.log");
+  fid << "Test" << std::endl;
+  fid.close();
+
+  std::ofstream fid2("testfile.log");
+  fid2 << "Test" << std::endl;
+  fid2.close();
+
   const int argc = 5;
   const char* argv[argc];
   argv[0] = "calc_J";
@@ -222,19 +225,22 @@ TEST_CASE("Argument Parser get multiple args to same flag","[unit]"){
         "monomers. This file should have the .pun extension."};
     set<vector<string>> flags;
     flags.insert(flag1);
-
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     ArgumentParser ArgPars(flags);
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
 
     string val = ".pun";
     string val2 = ".7";
     string val3 = ".orb";
     set<string> exts = {val, val2, val3};
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     ArgPars.setFlagArgOpt(
         "--punfile-pair", 
         ArgumentType::FILES,
         PropertyType::FILE_EXT,
         Option::ALLOWED_VALUES, exts);
 
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     const int argc = 5;
     const char* argv[argc];
     argv[0] = "calc_J";
@@ -243,7 +249,9 @@ TEST_CASE("Argument Parser get multiple args to same flag","[unit]"){
     argv[3] = "testfile.pun";
     ArgPars.parse(argv, argc);
 
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     std::vector<string> fileName = ArgPars.get<string>("--punfile-pair");
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     CHECK(fileName.at(0) == "file.orb");
     CHECK(fileName.at(1) == "testfile.pun");
   }
@@ -255,6 +263,7 @@ TEST_CASE("Argument Parser get multiple args to same flag","[unit]"){
     set<vector<string>> flags;
     flags.insert(flag1);
 
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     ArgumentParser ArgPars(flags);
 
     ArgPars.setFlagArgOpt(
@@ -262,12 +271,14 @@ TEST_CASE("Argument Parser get multiple args to same flag","[unit]"){
         ArgumentType::NUMERIC,
         PropertyType::NUMERIC,
         Option::MAX, 11);
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     ArgPars.setFlagArgOpt(
         "--numbers", 
         ArgumentType::NUMERIC,
         PropertyType::NUMERIC,
         Option::MIN, 0);
 
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
 
     const int argc = 3;
     const char* argv[argc];
@@ -277,6 +288,7 @@ TEST_CASE("Argument Parser get multiple args to same flag","[unit]"){
     argv[2] = "12";
     CHECK_THROWS(ArgPars.parse(argv, argc));
  
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
   }
 }
 
@@ -288,19 +300,23 @@ TEST_CASE("Argument Parser getting numerical types","[unit]"){
     set<vector<string>> flags;
     flags.insert(flag1);
 
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     ArgumentParser ArgPars(flags);
 
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     ArgPars.setFlagArgOpt(
         "--numbers", 
         ArgumentType::NUMERIC,
         PropertyType::NUMERIC,
         Option::MAX, 11);
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     ArgPars.setFlagArgOpt(
         "--numbers", 
         ArgumentType::NUMERIC,
         PropertyType::NUMERIC,
         Option::MIN, 0);
 
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
 
     const int argc = 5;
     const char* argv[argc];
@@ -309,19 +325,23 @@ TEST_CASE("Argument Parser getting numerical types","[unit]"){
     argv[2] = "0";
     argv[3] = "3";
     argv[4] = "11";
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     ArgPars.parse(argv, argc);
 
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     std::vector<int> numbers = ArgPars.get<int>("--numbers");
     CHECK(numbers.at(0) == 0);
     CHECK(numbers.at(1) == 3);
     CHECK(numbers.at(2) == 11);
 
 
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     std::vector<double> numbers_double = ArgPars.get<double>("--numbers");
     CHECK(numbers_double.at(0) == Approx(0));
     CHECK(numbers_double.at(1) == Approx(3));
     CHECK(numbers_double.at(2) == Approx(11));
 
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     std::vector<size_t> numbers_size_t = ArgPars.get<size_t>("--numbers");
     CHECK(numbers_size_t.at(0) == 0);
     CHECK(numbers_size_t.at(1) == 3);

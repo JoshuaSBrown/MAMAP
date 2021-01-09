@@ -44,6 +44,25 @@ std::string rtrimmed(std::string s);
 // trim from both ends (copying)
 std::string trimmed(std::string s);
 
+bool constains(const std::string & str, const std::string & substr);
+
+// Remove everything in str that is part and between str1 and str2
+// E.g.
+// std::string str = "bladh (fdls) fda";
+//
+// new_str = removeEverythingBetweenAndIncluding(str,"(",")");
+//
+// where new_str becomes
+//
+// "bladh  fda";
+//
+std::string removeEverythingBetweenAndIncluding(
+    std::string str,
+    const std::string & str1,
+    const std::string & str2);
+
+std::string removeSubStr(std::string line, const std::string & substr);
+
 void removeSpace(std::string s);
 
 // Grab everything after the first occurance of a string.

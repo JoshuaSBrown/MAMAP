@@ -12,25 +12,24 @@ using namespace std;
 
 namespace mamap {
   namespace {
-    std::set<bool> getSetBoolEnforced_(Option option, std::map<Option, std::any> options_){
-      set<bool> values;
+    std::vector<bool> getVecBoolEnforced_(Option option, std::map<Option, std::any> options_){
+      vector<bool> values;
       // Because the default is a set of strings
       set<string> stored_values = std::any_cast<set<string>>(options_.at(option));
-      std::cout << "getSetBoolEnforced size of stored values " << stored_values.size() << std::endl;
       for ( std::string val : stored_values){
         if( to_upper(val) == "TRUE" ) {
-          values.insert(true);
+          values.push_back(true);
         } else if( to_upper(val) == "FALSE") {
-          values.insert(false);
+          values.push_back(false);
         }
       } 
       return values;
     }
 
     // Convert from a set of bools to a set of strings
-    std::any convertSetBoolEnforcedToDefault_(std::any val){
+    std::any convertVecBoolEnforcedToDefault_(std::any val){
       // Because the default is a set of strings
-      set<bool> values = std::any_cast<set<bool>>(val);
+      auto values = std::any_cast<vector<bool>>(val);
       set<string> default_values;
       for ( bool val : values){
         if( val ) {
@@ -77,22 +76,22 @@ namespace mamap {
       return val;
     }
 
-    std::set<int> getSetIntEnforced_(Option option, std::map<Option, std::any> options_){
-      set<int> values;
+    std::vector<int> getVecIntEnforced_(Option option, std::map<Option, std::any> options_){
+      vector<int> values;
       // Because the default is a set of strings
       set<string> stored_values = std::any_cast<set<string>>(options_.at(option));
       for ( std::string val : stored_values){
         if( to_upper(val) == "TRUE" ) {
-          values.insert(1);
+          values.push_back(1);
         } else if( to_upper(val) == "FALSE") {
-          values.insert(0);
+          values.push_back(0);
         }
       } 
       return values;
     }
 
-    std::any convertSetIntEnforcedToDefault_(std::any val){
-      set<int> values = std::any_cast<set<int>>(val);
+    std::any convertVecIntEnforcedToDefault_(std::any val){
+      vector<int> values = std::any_cast<vector<int>>(val);
       set<string> default_values;
       for ( int val : values){
         if( val == 0) {
@@ -160,18 +159,18 @@ namespace mamap {
     default_option_type_.insert(std::pair<Option, type_index>(Option::ENFORCED, type_index(typeid(set<string>))));
 
     allowed_option_types_[Option::ENFORCED].push_back(type_index(typeid(set<string>)));
-    allowed_option_types_[Option::ENFORCED].push_back(type_index(typeid(set<bool>)));
-    allowed_option_types_[Option::ENFORCED].push_back(type_index(typeid(set<int>)));
+    allowed_option_types_[Option::ENFORCED].push_back(type_index(typeid(vector<bool>)));
+    allowed_option_types_[Option::ENFORCED].push_back(type_index(typeid(vector<int>)));
 
     str_convert_[Option::ENFORCED] = &mamap::getStrEnforced_;
-    set_bool_convert_[Option::ENFORCED] = &mamap::getSetBoolEnforced_;
+    vector_bool_convert_[Option::ENFORCED] = &mamap::getVecBoolEnforced_;
     set_str_convert_[Option::ENFORCED] = &mamap::getSetStrEnforced_;
-    set_int_convert_[Option::ENFORCED] = &mamap::getSetIntEnforced_;
+    vector_int_convert_[Option::ENFORCED] = &mamap::getVecIntEnforced_;
 
     str_convert_to_default_[Option::ENFORCED] = &mamap::convertStrEnforcedToDefault_;
-    set_bool_convert_to_default_[Option::ENFORCED] = &mamap::convertSetBoolEnforcedToDefault_;
+    vector_bool_convert_to_default_[Option::ENFORCED] = &mamap::convertVecBoolEnforcedToDefault_;
     set_str_convert_to_default_[Option::ENFORCED] = &mamap::convertSetStrEnforcedToDefault_;
-    set_int_convert_to_default_[Option::ENFORCED] = &mamap::convertSetIntEnforcedToDefault_;
+    vector_int_convert_to_default_[Option::ENFORCED] = &mamap::convertVecIntEnforcedToDefault_;
 
     default_option_type_.insert(std::pair<Option, type_index>(Option::ALLOWED_VALUES, type_index(typeid(set<string>))));
 

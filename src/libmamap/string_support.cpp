@@ -40,6 +40,39 @@ void rtrim_(string &s) {
       s.end());
 }
 
+std::string removeEverythingBetweenAndIncluding(
+    std::string str,
+    const std::string & str1,
+    const std::string & str2) {
+
+  auto pos1 = str.find(str1);
+  auto pos2 = str.find(str2);
+  if( pos1 == std::string::npos ) {
+    throw std::runtime_error("Cannot remove everything between the two specified strings.");
+  }else if( pos2 == std::string::npos) {
+    throw std::runtime_error("Cannot remove everything between the two specified strings.");
+  }
+  str.erase(pos1, (pos2 + str2.length())-pos1);
+  return str;
+}
+
+std::string removeSubStr(std::string line, const std::string & substr)
+{
+    // Search for the substring in string
+    size_t pos = line.find(substr);
+    if (pos == std::string::npos)
+    {
+			throw std::runtime_error("Cannot remove substring from string it does not exist.");
+    }
+		return line.erase(pos, substr.length());
+}
+
+
+
+bool constains(const std::string & str, const std::string & substr){
+  if( str.find(substr) != string::npos ) return true;
+  return false;
+}
 // Split a string up by spaces
 vector<string> splitSt(const string & input) {
   istringstream iss(input);

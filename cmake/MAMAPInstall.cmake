@@ -6,8 +6,6 @@ target_include_directories(mamap PUBLIC
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/mamap>
   )
 
-message("Instal include dir ${CMAKE_INSTALL_INCLUDEDIR}/mamap")
-
 install(TARGETS mamap EXPORT mamapTargets
   INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"

@@ -48,10 +48,10 @@ TEST_CASE("getPropOption","[unit]"){
   // Choice enforced can be returned as bool, an int or a string
   set<string> choice_enforced_str =
     propStrChoice.getPropOption<set<string>>(Option::ENFORCED);
-  set<bool> choice_enforced_bool =
-    propStrChoice.getPropOption<set<bool>>(Option::ENFORCED);
-  set<int> choice_enforced_int =
-    propStrChoice.getPropOption<set<int>>(Option::ENFORCED);
+  auto choice_enforced_bool =
+    propStrChoice.getPropOption<vector<bool>>(Option::ENFORCED);
+  auto choice_enforced_int =
+    propStrChoice.getPropOption<vector<int>>(Option::ENFORCED);
   set<string> choices = propStrChoice.getPropOption<set<string>>(Option::ALLOWED_VALUES);
 
   string enforced_str = *(choice_enforced_str.begin());
@@ -78,10 +78,10 @@ TEST_CASE("setPropOption", "[unit]"){
   // Checking default values
   set<string> choice_enforced_str =
     propStrChoice.getPropOption<set<string>>(Option::ENFORCED);
-  set<bool> choice_enforced_bool =
-    propStrChoice.getPropOption<set<bool>>(Option::ENFORCED);
-  set<int> choice_enforced_int =
-    propStrChoice.getPropOption<set<int>>(Option::ENFORCED);
+  auto choice_enforced_bool =
+    propStrChoice.getPropOption<vector<bool>>(Option::ENFORCED);
+  auto choice_enforced_int =
+    propStrChoice.getPropOption<vector<int>>(Option::ENFORCED);
 
   string enforced_str = *(choice_enforced_str.begin());
   bool enforced_bool = *(choice_enforced_bool.begin());
