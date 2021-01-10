@@ -83,9 +83,7 @@ std::string removeSubStr(std::string line, const std::string & substr)
 		return line.erase(pos, substr.length());
 }
 
-
-
-bool constains(const std::string & str, const std::string & substr){
+bool contains(const std::string & str, const std::string & substr){
   if( str.find(substr) != string::npos ) return true;
   return false;
 }

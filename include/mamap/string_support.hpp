@@ -44,7 +44,7 @@ std::string rtrimmed(std::string s);
 // trim from both ends (copying)
 std::string trimmed(std::string s);
 
-bool constains(const std::string & str, const std::string & substr);
+bool contains(const std::string & str, const std::string & substr);
 
 // Remove everything in str that is part and between str1 and str2
 // E.g.
