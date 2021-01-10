@@ -131,9 +131,19 @@ TEST_CASE("Argument Parser parse command","[unit]"){
       PropertyType::FILE_EXISTS,
       Option::MUST_EXIST, true);
 
+  std::ofstream fid;
+  fid.open("testfile.pun");
+  fid << "Test" << std::endl;
+  fid.close();
+
+  std::ofstream fid2;
+  fid2.open("testfile.pun");
+  fid2 << "Test" << std::endl;
+  fid2.close();
+
   int argc = 7;
-  const char* argv[7];  // = {"calc_J","--punfile-pair", "testfile.pun",
-  // "--punfile-mon1","file.orb"};
+  const char* argv[7];
+
   argv[0] = "calc_J";
   argv[1] = "--punfile-pair";
   argv[2] = "testfile.pun";

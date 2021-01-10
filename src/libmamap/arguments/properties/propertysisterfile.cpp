@@ -247,7 +247,8 @@ namespace mamap {
           fileExists.push_back(false);
         }
       } else {
-        throw std::runtime_error("Sister file extensions have not been specified for " + fileName);
+        // Sister files are not required
+        return true;
       }
     }
 

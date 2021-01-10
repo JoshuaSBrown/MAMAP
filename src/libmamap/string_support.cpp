@@ -56,6 +56,22 @@ std::string removeEverythingBetweenAndIncluding(
   return str;
 }
 
+std::string getEverythingBetweenAndExcluding(
+    std::string str,
+    const std::string & str1,
+    const std::string & str2) {
+
+  auto pos1 = str.find(str1);
+  auto pos2 = str.find(str2);
+  if( pos1 == std::string::npos ) {
+    throw std::runtime_error("Cannot get everything between the two specified strings.");
+  }else if( pos2 == std::string::npos) {
+    throw std::runtime_error("Cannot get everything between the two specified strings.");
+  }
+  auto diff = pos2 - (pos1 + str1.length());
+  return str.substr(pos1 + str1.length(), diff);
+}
+
 std::string removeSubStr(std::string line, const std::string & substr)
 {
     // Search for the substring in string

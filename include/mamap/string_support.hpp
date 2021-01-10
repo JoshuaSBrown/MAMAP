@@ -61,6 +61,11 @@ std::string removeEverythingBetweenAndIncluding(
     const std::string & str1,
     const std::string & str2);
 
+std::string getEverythingBetweenAndExcluding(
+    std::string str,
+    const std::string & str1,
+    const std::string & str2);
+
 std::string removeSubStr(std::string line, const std::string & substr);
 
 void removeSpace(std::string s);

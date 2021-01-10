@@ -130,3 +130,16 @@ TEST_CASE("remove everything between two substrings","[unit]") {
   std::cout << line << std::endl;
   CHECK(line.compare("This tomorrow") == 0);
 }
+
+TEST_CASE("get everything between two substrings","[unit]") {
+  string str = "This is the day of tomorrow";
+  string substr1 = " is ";
+  string substr2 = " of";
+  string line = getEverythingBetweenAndExcluding(str,substr1,substr2);
+  std::cout << str << std::endl;
+  std::cout << substr1 << std::endl;
+  std::cout << substr2 << std::endl;
+  std::cout << line << std::endl;
+  CHECK(line.compare("the day") == 0);
+}
+
